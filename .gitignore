@@ -1,0 +1,17 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular
+dist/
+.angular/
+
+# Docker
+postgres_data/
+mongo_data/
+
+# IDEs
+.vscode/
+.idea/

@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app # Monta el código fuente del backend
+      - /app/node_modules # Evita conflictos con dependencias locales
+    command: npm start # Ejecuta el backend en modo desarrollo
+    depends_on:
+      - postgres
+      - mongodb
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "4200:4200" # Cambia a 4200 para desarrollo
+    volumes:
+      - ./frontend:/app # Monta el código fuente del frontend
+      - /app/node_modules # Evita conflictos de dependencias
+    command: npm start # Usa ng serve para desarrollo
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: voting_system
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Volumen para persistir datos
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db # Volumen para persistir datos
+
+volumes:
+  postgres_data:
+  mongo_data:
