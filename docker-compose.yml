@@ -7,41 +7,63 @@ services:
       - "3000:3000"
     volumes:
       - ./backend:/app # Monta el código fuente del backend
-      - /app/node_modules # Evita conflictos con dependencias locales
-    command: npm start # Ejecuta el backend en modo desarrollo
+    command: npm start
     depends_on:
       - postgres
       - mongodb
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   frontend:
     build:
       context: ./frontend
     ports:
-      - "4200:4200" # Cambia a 4200 para desarrollo
+      - "4200:4200"
     volumes:
       - ./frontend:/app # Monta el código fuente del frontend
-      - /app/node_modules # Evita conflictos de dependencias
-    command: npm start # Usa ng serve para desarrollo
+    command: ng serve --host 0.0.0.0
     depends_on:
       - backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: admin  
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: voting_system
     ports:
-      - "5432:5432"
+      - "5432:5432" # Solo si necesitas acceso externo
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Volumen para persistir datos
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 512M
 
   mongodb:
     image: mongo:6
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db # Volumen para persistir datos
+      - mongo_data:/data/db
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 512M
 
 volumes:
   postgres_data:

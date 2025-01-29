@@ -13,7 +13,7 @@ export class VoteService {
 
     // Método para enviar un voto
     submitVote(vote: VoteDTO): Observable<any> {
-        return this.http.post(`${this.backendUrl}/vote`, vote);
+        return this.http.post(`${this.backendUrl}/vote`, vote, { responseType: 'text' });
     }
 
     // Método para obtener resultados

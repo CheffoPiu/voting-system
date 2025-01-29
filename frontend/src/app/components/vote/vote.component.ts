@@ -12,7 +12,7 @@ import { VoteService } from 'src/app/services/vote.service';
 export class VoteComponent implements OnInit {
   options: string[] = [];
   selectedOption: string = '';
-  userId = '123e4567-e89b-12d3-a456-426614174000'; // Genera un UUID para cada usuario
+  userId = '22'; // Genera un UUID para cada usuario
   votingStrategy!: VotingStrategy;
 
   constructor(private voteService: VoteService) {}
@@ -30,9 +30,12 @@ export class VoteComponent implements OnInit {
       }
 
       const vote = new VoteDTO(this.userId, this.selectedOption);
+      console.log("cote",vote)
       this.voteService.submitVote(vote).subscribe({
           next: () => alert('Voto registrado con éxito.'),
-          error: () => alert('Hubo un error al registrar tu voto.'),
+          error: (err) => {
+            console.error('Error al registrar el voto:', err);
+          },
       });
   }
 }

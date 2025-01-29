@@ -14,6 +14,7 @@ export class ResultsComponent implements OnInit {
   ngOnInit(): void {
       this.webSocketService.listen('updateResults').subscribe((data) => {
           this.results = data;
+          console.log("data",data)
       });
   }
 }
