@@ -1,0 +1,90 @@
+<!-- Barra de búsqueda y botón de agregar -->
+<mat-card class="cardWithShadow">
+    <mat-card-content class="p-24">
+      <div class="row justify-content-between">
+        <div class="col-lg-4">
+          <mat-form-field appearance="outline" class="w-100 hide-hint">
+            <mat-label>Buscar Usuario</mat-label>
+            <input
+              matInput
+              placeholder="Buscar Usuario"
+              (keyup)="applyFilter($any($event.target).value)"
+            />
+            <mat-icon matSuffix>
+              <i-tabler name="search" class="icon-20"></i-tabler>
+            </mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-4 d-flex align-items-center justify-content-end">
+          <button mat-flat-button (click)="openDialog('Agregar', {})" color="primary">
+            Agregar Usuario
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  
+  <!-- Tabla de usuarios -->
+  <mat-card class="cardWithShadow">
+    <mat-card-content class="p-24">
+      <div class="table-responsive">
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+          <!-- Índice -->
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef class="f-s-16 f-w-600"> # </th>
+            <td mat-cell *matCellDef="let row; let i = index" class="f-s-14"> {{ i + 1 }} </td>
+          </ng-container>
+  
+          <!-- Nombre -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-s-16 f-w-600"> Nombre </th>
+            <td mat-cell *matCellDef="let row" class="f-s-14"> {{ row.nombre }} </td>
+          </ng-container>
+  
+          <!-- Correo -->
+          <ng-container matColumnDef="correo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-s-16 f-w-600"> Correo </th>
+            <td mat-cell *matCellDef="let row" class="f-s-14"> {{ row.correo }} </td>
+          </ng-container>
+  
+          <!-- Tipo -->
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-s-16 f-w-600"> Tipo </th>
+            <td mat-cell *matCellDef="let row" class="f-s-14"> 
+              <span class="badge">
+                {{ row.tipo }}
+              </span>
+            </td>
+          </ng-container>
+  
+           <!-- Equipo -->
+           <ng-container matColumnDef="equipo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-s-16 f-w-600"> Equipo </th>
+            <td mat-cell *matCellDef="let row" class="f-s-14"> 
+              <span class="badge">
+                {{ row.equipo?.nombre || ''}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="f-s-16 f-w-600 text-center"> Acciones </th>
+            <td mat-cell *matCellDef="let row" class="text-center">
+              <button mat-icon-button color="primary" (click)="openDialog('Edit', row)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="openDialog('Delete', row)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+  
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  
+  

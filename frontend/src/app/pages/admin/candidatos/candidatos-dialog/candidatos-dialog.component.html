@@ -1,0 +1,167 @@
+<h2 class="f-w-500 m-b-24" mat-dialog-title>
+    <strong>{{action}} Jugador</strong>
+  </h2>
+  <div *ngIf="action !== 'Delete'; else deleteContent">
+  <mat-dialog-content style="max-width: 600px">
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+      <form [formGroup]="jugadorForm">
+      <div class="d-flex align-items-center m-b-16">
+        <img
+          class="mat-card-avatar"
+          [src]="jugadorForm.get('imagePathBlob')?.value || 'assets/images/profile/user-1.jpg'"
+          class="rounded-circle"
+          width="50"
+        />
+        <button mat-flat-button color="primary" class="m-l-16 input-file-button">
+          <input type="file" (change)="selectFile($event)" accept="image/*" />
+        </button>
+      </div>
+  
+      <div class="row">
+        <!-- Cédula -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Cédula</mat-label>
+            <input
+              matInput
+              formControlName="cedula"
+              placeholder="Cédula"
+              (blur)="onCedulaBlur()"
+            />
+            <mat-error *ngIf="jugadorForm.get('cedula')?.hasError('required')">
+              La cédula es obligatoria.
+            </mat-error>
+            <mat-error *ngIf="jugadorForm.get('cedula')?.hasError('pattern')">
+              La cédula debe tener 10 dígitos.
+            </mat-error>
+          </mat-form-field>
+          
+        </div>
+
+        <!-- Correo -->
+        <div class="col-lg-6">
+        <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Correo</mat-label>
+            <input matInput formControlName="email" placeholder="Correo" />
+            <mat-error *ngIf="jugadorForm.get('email')?.hasError('email')">
+            El correo ingresado no es válido.
+            </mat-error>
+        </mat-form-field>
+        </div>
+  
+        <!-- Nombre -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" placeholder="Nombre" />
+            <mat-error *ngIf="jugadorForm.get('nombre')?.hasError('required')">
+              El nombre es obligatorio.
+            </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <!-- Segundo Nombre -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Segundo Nombre</mat-label>
+            <input matInput formControlName="segundoNombre" placeholder="Segundo Nombre" />
+          </mat-form-field>
+        </div>
+  
+        <!-- Apellido -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="apellido" placeholder="Apellido" />
+            <mat-error *ngIf="jugadorForm.get('apellido')?.hasError('required')">
+              El apellido es obligatorio.
+            </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <!-- Segundo Apellido -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Segundo Apellido</mat-label>
+            <input matInput formControlName="segundoApellido" placeholder="Segundo Apellido" />
+            <mat-error *ngIf="jugadorForm.get('segundoApellido')?.hasError('required')">
+              El segundo apellido es obligatorio.
+            </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <!-- Número -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Número Camiseta</mat-label>
+            <input
+              matInput
+              formControlName="numero"
+              placeholder="Número Camiseta"
+              maxlength="3"
+            />
+            <mat-error *ngIf="jugadorForm.get('numero')?.hasError('required')">
+              El número es obligatorio.
+            </mat-error>
+            <mat-error *ngIf="jugadorForm.get('numero')?.hasError('pattern')">
+            Solo números de hasta 3 dígitos.
+            </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <!-- Teléfono -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telefono" placeholder="Teléfono" />
+          </mat-form-field>
+        </div>
+  
+        <!-- Fecha de Nacimiento -->
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fecha de Nacimiento</mat-label>
+            <input
+              matInput
+              formControlName="fechaNacimiento"
+              [matDatepicker]="picker"
+              readonly
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="jugadorForm.get('fechaNacimiento')?.hasError('required')">
+              La fecha de nacimiento es obligatoria.
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="!jugadorForm.valid"
+          (click)="doAction()"
+        >
+          Guardar
+        </button>
+        <button mat-stroked-button color="warn" class="m-l-8" (click)="closeDialog()">
+          Cancelar
+        </button>
+    </form>
+  </mat-dialog-content>
+</div>
+
+<ng-template #deleteContent>
+  <div class="p-x-24">
+    <p>
+      ¿Seguro que deseas eliminar el jugador
+      <span class="f-w-600">{{ data?.nombre }} {{ data?.apellido }}</span>?
+    </p>
+  </div>
+  <div mat-dialog-actions class="p-x-24 p-b-24">
+    <button mat-flat-button color="warn" (click)="deleteJugador()">Eliminar</button>
+    <button mat-button (click)="closeDialog()" class="m-l-8">Cancelar</button>
+  </div>
+</ng-template>
+  
