@@ -492,9 +492,21 @@ export class ResultsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-      this.webSocketService.listen('updateResults').subscribe((data) => {
-          this.results = data;
-          console.log("data",data)
-      });
+    // Escuchar evento de actualización de resultados en tiempo real
+    this.webSocketService.listen('updateResults').subscribe((data) => {
+      this.results = data;
+    });
+
+    // Opcional: Obtener los resultados iniciales al cargar la página
+    this.getInitialResults();
   }
+
+  getInitialResults(): void {
+    fetch('http://localhost:3000/results')
+      .then(response => response.json())
+      .then(data => this.results = data)
+      .catch(error => console.error('Error al obtener resultados:', error));
+  }
+  
 }
+

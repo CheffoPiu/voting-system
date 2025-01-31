@@ -1,11 +1,13 @@
 class VoteService {
-    constructor(dao) {
-        this.dao = dao;
+    constructor(daoPostgres, daoMongo) {
+        this.daoPostgres = daoPostgres;
+        this.daoMongo = daoMongo;
     }
 
-    async registerVote(userId, option) {
+    async registerVote(userId, candidateId) {
         try {
-            await this.dao.createVote(userId, option);
+            await this.daoPostgres.createVote(userId, candidateId);
+            await this.daoMongo.logVote(userId, candidateId);
         } catch (err) {
             console.error('Error en servicio de votación:', err.message);
             throw err;
@@ -14,7 +16,7 @@ class VoteService {
 
     async getResults() {
         try {
-            return await this.dao.getResults();
+            return await this.daoPostgres.getResults();
         } catch (err) {
             console.error('Error al obtener resultados en servicio:', err.message);
             throw err;

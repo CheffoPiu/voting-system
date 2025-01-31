@@ -17,29 +17,21 @@ class MongoDAO {
         }
     }
 
-    async createVote(userId, option) {
+    async logVote(userId, candidateId) {
         try {
-            const collection = this.db.collection('votes');
-            await collection.insertOne({ userId, option });
+            const collection = this.db.collection('vote_logs');
+            await collection.insertOne({ userId, candidateId, timestamp: new Date() });
         } catch (err) {
-            console.error('Error al insertar voto en MongoDB:', err.message);
+            console.error('Error al registrar voto en MongoDB:', err.message);
             throw err;
         }
     }
 
-    async getResults() {
+    async getAuditLogs() {
         try {
-            const collection = this.db.collection('votes');
-            const results = await collection.aggregate([
-                { $group: { _id: '$option', votes: { $count: {} } } },
-            ]).toArray();
-
-            return results.map((result) => ({
-                option: result._id,
-                votes: result.votes,
-            }));
+            return await this.db.collection('audit_logs').find().toArray();
         } catch (err) {
-            console.error('Error al obtener resultados de MongoDB:', err.message);
+            console.error('Error al obtener logs de MongoDB:', err.message);
             throw err;
         }
     }

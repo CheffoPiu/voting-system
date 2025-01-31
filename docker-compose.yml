@@ -1,70 +1,78 @@
-version: '3.8'
 services:
+  # 🚀 Backend (Node.js + Express)
   backend:
     build:
-      context: ./backend
+      context: ./backend  # Carpeta donde está el código del backend
     ports:
-      - "3000:3000"
+      - "3000:3000"  # Mapea el puerto 3000 del contenedor al 3000 local
     volumes:
-      - ./backend:/app # Monta el código fuente del backend
-    command: npm start
+      - ./backend:/app  # Monta el código fuente dentro del contenedor
+    command: npm start  # Ejecuta el backend con npm start
     depends_on:
-      - postgres
-      - mongodb
-    restart: unless-stopped
+      postgres:
+        condition: service_healthy  # Espera a que PostgreSQL esté listo
+      mongodb:
+        condition: service_healthy  # Espera a que MongoDB esté listo
+    restart: on-failure  # Solo reinicia si falla
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 512M
+          cpus: "0.5"  # Limita el uso de CPU a 50%
+          memory: 512M  # Limita la memoria a 512MB
 
+  # 🌍 Frontend (Angular)
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend  # Carpeta donde está el código del frontend
     ports:
-      - "4200:4200"
+      - "4200:4200"  # Mapea el puerto 4200 del contenedor al 4200 local
     volumes:
-      - ./frontend:/app # Monta el código fuente del frontend
-    command: ng serve --host 0.0.0.0
+      - ./frontend:/app  # Monta el código fuente dentro del contenedor
+    command: ng serve --host 0.0.0.0 --disable-host-check  # Corre Angular
     depends_on:
-      - backend
-    restart: unless-stopped
+      - backend  # Solo inicia si el backend está corriendo
+    restart: on-failure  # Solo reinicia si falla
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 512M
+          cpus: "0.5"  # Limita el uso de CPU a 50%
+          memory: 512M  # Limita la memoria a 512MB
 
+  # 🛢️ Base de datos PostgreSQL
   postgres:
-    image: postgres:15
+    image: postgres:15  # Imagen oficial de PostgreSQL
     environment:
-      POSTGRES_USER: admin  
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: voting_system
+      POSTGRES_USER: admin  # Usuario de la base de datos
+      POSTGRES_PASSWORD: admin  # Contraseña
+      POSTGRES_DB: voting_system  # Nombre de la base de datos
     ports:
-      - "5432:5432" # Solo si necesitas acceso externo
+      - "5432:5432"  # Mapea el puerto 5432 del contenedor al 5432 local
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 512M
+      - postgres_data:/var/lib/postgresql/data  # Persiste los datos en un volumen
+    restart: on-failure  # Solo reinicia si falla
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]  # Verifica si PostgreSQL está activo
+      interval: 10s  # Cada 10 segundos
+      timeout: 5s  # Espera máximo 5 segundos
+      retries: 3  # Reintenta 5 veces antes de fallar
 
+  # 🛢️ Base de datos MongoDB
   mongodb:
-    image: mongo:6
+    image: mongo:6  # Imagen oficial de MongoDB
     ports:
-      - "27017:27017"
+      - "27017:27017"  # Mapea el puerto 27017 del contenedor al 27017 local
     volumes:
-      - mongo_data:/data/db
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 512M
+      - mongo_data:/data/db  # Persiste los datos en un volumen
+    restart: on-failure  # Solo reinicia si falla
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet  # Verifica si MongoDB está activo
+      interval: 10s  # Cada 10 segundos
+      timeout: 5s  # Espera máximo 5 segundos
+      retries: 3  # Reintenta 5 veces antes de fallar
 
+# 🛑 Definición de volúmenes (para persistencia de datos)
 volumes:
   postgres_data:
+    name: voting_postgres_data  # Nombre del volumen de PostgreSQL
   mongo_data:
+    name: voting_mongo_data  # Nombre del volumen de MongoDB
