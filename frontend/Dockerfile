@@ -1,30 +1,26 @@
-# Usa una versión de Node estable y compatible
+# Usa una versión de Node.js estable y compatible con Angular
 FROM node:18-bullseye
 
-# Establecer directorio de trabajo dentro del contenedor
+# Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar package.json y package-lock.json antes de instalar dependencias
+# Copiar package.json y package-lock.json para instalar dependencias primero
 COPY package.json package-lock.json ./
 
-# Instalar Angular CLI globalmente
+# Instalar Angular CLI globalmente en el contenedor
 RUN npm install -g @angular/cli@18.2.12
 
-# Instalar dependencias de forma limpia evitando problemas en ARM64
-RUN npm ci --omit=optional --legacy-peer-deps --force
+# Instalar dependencias sin dependencias opcionales para evitar problemas en ARM64
+RUN npm ci --omit=optional --legacy-peer-deps
 
-# **Solución para el error de Rollup**
-RUN npm install --save-dev rollup --force
+# Instalar Rollup de manera explícita (para evitar problemas en ARM64)
+RUN npm install rollup --save-dev --force
 
-# **Forzar reconstrucción de esbuild y compatibilidad con x64**
+# Forzar compatibilidad con arquitectura x64
 RUN npm rebuild esbuild --platform=linux --arch=x64
-RUN npm rebuild --platform=linux --arch=x64
 
-# Copiar el resto del código fuente antes de construir
+# Copiar el resto del código fuente después de instalar dependencias
 COPY . .
-
-# **Verificar que Rollup está correctamente instalado**
-RUN node -e "console.log(require.resolve('rollup'))"
 
 # Construir la aplicación en modo producción
 RUN npm run build --configuration=production
@@ -32,8 +28,8 @@ RUN npm run build --configuration=production
 # Instalar un servidor HTTP ligero para servir Angular
 RUN npm install -g http-server
 
-# Exponer el puerto 80 para producción
-EXPOSE 80
+# Exponer el puerto para servir la aplicación en producción
+EXPOSE 4200
 
-# Cambiar a la carpeta correcta de dist (ajústalo según el nombre real del proyecto)
-CMD ["http-server", "dist/Spike", "-p", "80"]
+# Ejecutar el servidor en la carpeta correcta del build (dist)
+CMD ["http-server", "dist/Spike", "-p", "4200"]

@@ -6,74 +6,58 @@ services:
     ports:
       - "3000:3000"  # Mapea el puerto 3000 del contenedor al 3000 local
     volumes:
-      - ./backend:/app  # Monta el código fuente dentro del contenedor
-      - /app/node_modules  # Evita que node_modules se sobrescriba
+      - /app/node_modules  # Evita que node_modules se sobrescriba al montar código en desarrollo
     command: npm start  # Ejecuta el backend con npm start
     depends_on:
       postgres:
-        condition: service_healthy  # Espera a que PostgreSQL esté listo
+        condition: service_healthy  # Espera a que PostgreSQL esté listo antes de arrancar
       mongodb:
-        condition: service_healthy  # Espera a que MongoDB esté listo
-    restart: on-failure  # Solo reinicia si falla
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"  # Limita el uso de CPU a 50%
-          memory: 512M  # Limita la memoria a 512MB
+        condition: service_healthy  # Espera a que MongoDB esté listo antes de arrancar
+    restart: on-failure  # Reinicia el contenedor solo si falla
 
   # 🌍 Frontend (Angular)
   frontend:
     build:
       context: ./frontend  # Carpeta donde está el código del frontend
     ports:
-      - "4200:80"  # Mapea el puerto 4200 del contenedor al 4200 local
+      - "4200:4200"  # Mapea el puerto 4200 del contenedor al 4200 local (Asegura que http-server use 4200)
     volumes:
-      - ./frontend:/app  # Monta el código fuente dentro del contenedor
-      - /app/node_modules  # Evita que node_modules se sobrescriba
-    command: ng serve --host 0.0.0.0 --disable-host-check  # Corre Angular
-    depends_on:
-      - backend  # Solo inicia si el backend está corriendo
+      - /app/node_modules  # Evita sobreescribir dependencias
     restart: on-failure  # Solo reinicia si falla
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"  # Limita el uso de CPU a 50%
-          memory: 512M  # Limita la memoria a 512MB
 
   # 🛢️ Base de datos PostgreSQL
   postgres:
-    image: postgres:15  # Imagen oficial de PostgreSQL
+    image: postgres:15  # Usa la imagen oficial de PostgreSQL versión 15
     environment:
-      POSTGRES_HOST: postgres
       POSTGRES_USER: admin  # Usuario de la base de datos
-      POSTGRES_PASSWORD: admin  # Contraseña
+      POSTGRES_PASSWORD: admin  # Contraseña de la base de datos
       POSTGRES_DB: voting_system  # Nombre de la base de datos
     ports:
-      - "5432:5432"  # Mapea el puerto 5432 del contenedor al 5432 local
+      - "5432:5432"  # Expone el puerto 5432 localmente
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Persiste los datos en un volumen
+      - postgres_data:/var/lib/postgresql/data  # Usa un volumen persistente para almacenar los datos
     restart: on-failure  # Solo reinicia si falla
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]  # Verifica si PostgreSQL está activo
-      interval: 10s  # Cada 10 segundos
+      test: ["CMD-SHELL", "pg_isready -U admin"]  # Comprobar si PostgreSQL está activo
+      interval: 10s  # Verifica cada 10 segundos
       timeout: 5s  # Espera máximo 5 segundos
-      retries: 3  # Reintenta 5 veces antes de fallar
+      retries: 3  # Reintenta 3 veces antes de fallar
 
   # 🛢️ Base de datos MongoDB
   mongodb:
-    image: mongo:6  # Imagen oficial de MongoDB
+    image: mongo:6  # Usa la imagen oficial de MongoDB versión 6
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/voting_system
+      - MONGO_URI=mongodb://mongodb:27017/voting_system  # URL de conexión a MongoDB
     ports:
-      - "27017:27017"  # Mapea el puerto 27017 del contenedor al 27017 local
+      - "27017:27017"  # Expone el puerto 27017 localmente
     volumes:
-      - mongo_data:/data/db  # Persiste los datos en un volumen
+      - mongo_data:/data/db  # Usa un volumen persistente para los datos
     restart: on-failure  # Solo reinicia si falla
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh --quiet  # Verifica si MongoDB está activo
       interval: 10s  # Cada 10 segundos
       timeout: 5s  # Espera máximo 5 segundos
-      retries: 3  # Reintenta 5 veces antes de fallar
+      retries: 3  # Reintenta 3 veces antes de fallar
 
 # 🛑 Definición de volúmenes (para persistencia de datos)
 volumes:
