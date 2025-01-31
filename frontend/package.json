@@ -25,7 +25,7 @@
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "angular-calendar": "^0.31.1",
-    "angular-tabler-icons": "^3.1.0",
+    "angular-tabler-icons": "3.1.0",
     "apexcharts": "^3.49.1",
     "date-fns": "^3.6.0",
     "devextreme": "^24.1.3",

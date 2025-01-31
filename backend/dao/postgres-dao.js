@@ -4,8 +4,8 @@ class PostgresDAO {
     constructor() {
         this.pool = new Pool({
             user: 'admin',
-            host: 'postgres',
-            database: 'voting_system',
+            host: process.env.POSTGRES_HOST || 'postgres',
+            database: process.env.POSTGRES_DB || 'voting_system',
             password: 'admin',
             port: 5432,
         });

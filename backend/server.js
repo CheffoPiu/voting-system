@@ -64,6 +64,13 @@ app.get('/results', async (req, res) => {
     }
 });
 
+
+// ✅ ** Ruta para verificar que el backend está funcionando**
+app.get('/', (req, res) => {
+    res.send('Servidor backend funcionando correctamente 🚀');
+});
+
+
 // Iniciar servidor
 server.listen(3000, () => {
     console.log('Servidor corriendo en http://localhost:3000');

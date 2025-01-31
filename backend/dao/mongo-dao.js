@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 
 class MongoDAO {
     constructor() {
-        this.client = new MongoClient('mongodb://mongo:27017');
+        this.client = new MongoClient(process.env.MONGO_URI || 'mongodb://mongodb:27017');
         this.databaseName = 'voting_system';
     }
 

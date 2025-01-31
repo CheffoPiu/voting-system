@@ -7,6 +7,7 @@ services:
       - "3000:3000"  # Mapea el puerto 3000 del contenedor al 3000 local
     volumes:
       - ./backend:/app  # Monta el código fuente dentro del contenedor
+      - /app/node_modules  # Evita que node_modules se sobrescriba
     command: npm start  # Ejecuta el backend con npm start
     depends_on:
       postgres:
@@ -25,9 +26,10 @@ services:
     build:
       context: ./frontend  # Carpeta donde está el código del frontend
     ports:
-      - "4200:4200"  # Mapea el puerto 4200 del contenedor al 4200 local
+      - "4200:80"  # Mapea el puerto 4200 del contenedor al 4200 local
     volumes:
       - ./frontend:/app  # Monta el código fuente dentro del contenedor
+      - /app/node_modules  # Evita que node_modules se sobrescriba
     command: ng serve --host 0.0.0.0 --disable-host-check  # Corre Angular
     depends_on:
       - backend  # Solo inicia si el backend está corriendo
@@ -42,6 +44,7 @@ services:
   postgres:
     image: postgres:15  # Imagen oficial de PostgreSQL
     environment:
+      POSTGRES_HOST: postgres
       POSTGRES_USER: admin  # Usuario de la base de datos
       POSTGRES_PASSWORD: admin  # Contraseña
       POSTGRES_DB: voting_system  # Nombre de la base de datos
@@ -59,6 +62,8 @@ services:
   # 🛢️ Base de datos MongoDB
   mongodb:
     image: mongo:6  # Imagen oficial de MongoDB
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/voting_system
     ports:
       - "27017:27017"  # Mapea el puerto 27017 del contenedor al 27017 local
     volumes:
