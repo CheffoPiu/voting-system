@@ -32,4 +32,6 @@ RUN npm install -g http-server
 EXPOSE 4200
 
 # Ejecutar el servidor en la carpeta correcta del build (dist)
-CMD ["http-server", "dist/Spike", "-p", "4200"]
+# 🚀 Usar http-server con historyApiFallback para manejar rutas
+CMD ["http-server", "dist/Spike", "-p", "4200", "--proxy", "http://localhost:4200?"]
+

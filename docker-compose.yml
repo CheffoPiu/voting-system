@@ -21,6 +21,8 @@ services:
       context: ./frontend  # Carpeta donde está el código del frontend
     ports:
       - "4200:4200"  # Mapea el puerto 4200 del contenedor al 4200 local (Asegura que http-server use 4200)
+    environment:
+      - API_URL=http://backend:3000
     volumes:
       - /app/node_modules  # Evita sobreescribir dependencias
     restart: on-failure  # Solo reinicia si falla

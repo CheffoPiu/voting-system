@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
 
@@ -111,3 +111,5 @@ export const routes: Routes = [
     redirectTo: 'authentication/error',
   },
 ];
+
+export const AppRoutes = RouterModule.forRoot(routes, { useHash: true }); // ✅ Agregado { useHash: true }
