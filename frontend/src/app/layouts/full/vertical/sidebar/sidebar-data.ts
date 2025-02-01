@@ -17,6 +17,12 @@ export const navItems: NavItem[] = [
     route: '/admin/candidatos',
   },
   {
+    displayName: 'Logs',
+    iconName: 'logs',
+    bgcolor: 'primary',
+    route: '/admin/logs',
+  },
+  {
     navCap: 'Home',
   },
   {

@@ -33,6 +33,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { provideToastr } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 export function HttpLoaderFactory(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -43,6 +44,11 @@ import { NgxEchartsModule } from 'ngx-echarts';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    provideToastr({
+      timeOut: 3000, // Duración del toast
+      positionClass: 'toast-top-right', // Posición
+      preventDuplicates: true, // Evitar duplicados
+    }),
     provideRouter(
       routes,
       withInMemoryScrolling({
@@ -51,12 +57,12 @@ export const appConfig: ApplicationConfig = {
       }),
       withComponentInputBinding()
     ),
-    provideToastr(), // Proveedor de Toastr
     provideHttpClient(withInterceptorsFromDi()),
     provideClientHydration(),
     provideAnimationsAsync(),
     importProvidersFrom(
       FormsModule,
+      BrowserAnimationsModule,
       ReactiveFormsModule,
       MaterialModule,
       NgxPermissionsModule.forRoot(),

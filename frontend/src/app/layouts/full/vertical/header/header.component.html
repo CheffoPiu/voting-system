@@ -20,12 +20,12 @@
     <!-- --------------------------------------------------------------- -->
     <!--  Links -->
     <!-- --------------------------------------------------------------- -->
-    <button mat-button [matMenuTriggerFor]="appsmenu" aria-label="Notifications">
+    <!--button mat-button [matMenuTriggerFor]="appsmenu" aria-label="Notifications">
       <div class="d-flex align-items-center">
         Apps <i-tabler name="chevron-down" class="icon-16 m-l-4"></i-tabler>
       </div>
-    </button>
-    <mat-menu #appsmenu="matMenu" class="apps-dd cardWithShadow">
+    </button-->
+    <!--mat-menu #appsmenu="matMenu" class="apps-dd cardWithShadow">
       <div class="row">
         <div class="col-sm-8 b-r-1 p-r-0">
           <div class="p-32 p-b-0">
@@ -69,7 +69,7 @@
           </div>
         </div>
       </div>
-    </mat-menu>
+    </mat-menu-->
     <a mat-button [routerLink]="['/apps/chat']">Chat</a>
     <a mat-button [routerLink]="['/apps/calendar']">Calendar</a>
     <a mat-button [routerLink]="['/apps/email/inbox']">Email</a>
@@ -85,12 +85,12 @@
   <!-- --------------------------------------------------------------- -->
   <!--  Search -->
   <!-- --------------------------------------------------------------- -->
-  <button mat-stroked-button class="d-none d-lg-flex" (click)="openDialog()">
+  <!--button mat-stroked-button class="d-none d-lg-flex" (click)="openDialog()">
     <div class="d-flex align-items-center">
       <i-tabler name="search" class="icon-20 d-flex m-r-10"></i-tabler> Try to
       Searching...
     </div>
-  </button>
+  </button-->
 
   <!-- --------------------------------------------------------------- -->
   <!-- langugage Dropdown -->
@@ -112,7 +112,7 @@
   <!-- --------------------------------------------------------------- -->
   <!-- Messages Dropdown -->
   <!-- --------------------------------------------------------------- -->
-  <button mat-icon-button [matMenuTriggerFor]="msgMenu" aria-label="Messages">
+  <!--button mat-icon-button [matMenuTriggerFor]="msgMenu" aria-label="Messages">
     <i-tabler class="d-flex" name="message-2"></i-tabler>
     <div class="pulse">
       <span class="heartbit border-primary"></span>
@@ -146,7 +146,7 @@
         See All Messages
       </button>
     </div>
-  </mat-menu>
+  </mat-menu-->
 
   <!-- --------------------------------------------------------------- -->
   <!-- Shortcuts Dropdown -->

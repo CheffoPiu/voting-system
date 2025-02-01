@@ -19,5 +19,5 @@ RUN chmod -R 755 /app
 # 🌐 Exponer el puerto 3000 para que el backend sea accesible
 EXPOSE 3000
 
-# 🚀 Comando de inicio del backend
+# 🚀 Comando de inicio del backend (revisa que package.json tenga "start": "node server.js")
 CMD ["npm", "start"]

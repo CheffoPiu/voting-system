@@ -2,68 +2,74 @@ services:
   # 🚀 Backend (Node.js + Express)
   backend:
     build:
-      context: ./backend  # Carpeta donde está el código del backend
+      context: ./backend
     ports:
-      - "3000:3000"  # Mapea el puerto 3000 del contenedor al 3000 local
+      - "3000:3000"
     volumes:
-      - /app/node_modules  # Evita que node_modules se sobrescriba al montar código en desarrollo
-    command: npm start  # Ejecuta el backend con npm start
+      - ./backend:/app  # Monta el código fuente en desarrollo
+      - /app/node_modules  # Evita sobrescribir node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev  # Usa nodemon para desarrollo
     depends_on:
       postgres:
-        condition: service_healthy  # Espera a que PostgreSQL esté listo antes de arrancar
+        condition: service_healthy
       mongodb:
-        condition: service_healthy  # Espera a que MongoDB esté listo antes de arrancar
-    restart: on-failure  # Reinicia el contenedor solo si falla
+        condition: service_healthy
+    restart: on-failure
 
   # 🌍 Frontend (Angular)
   frontend:
     build:
-      context: ./frontend  # Carpeta donde está el código del frontend
+      context: ./frontend
     ports:
-      - "4200:4200"  # Mapea el puerto 4200 del contenedor al 4200 local (Asegura que http-server use 4200)
+      - "4200:4200"
     environment:
       - API_URL=http://backend:3000
     volumes:
+      - ./frontend:/app  # Monta el código fuente en desarrollo
       - /app/node_modules  # Evita sobreescribir dependencias
-    restart: on-failure  # Solo reinicia si falla
+    command: ng serve --host 0.0.0.0 --disable-host-check
+    restart: on-failure
 
   # 🛢️ Base de datos PostgreSQL
   postgres:
-    image: postgres:15  # Usa la imagen oficial de PostgreSQL versión 15
+    image: postgres:15
     environment:
-      POSTGRES_USER: admin  # Usuario de la base de datos
-      POSTGRES_PASSWORD: admin  # Contraseña de la base de datos
-      POSTGRES_DB: voting_system  # Nombre de la base de datos
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: voting_system
     ports:
-      - "5432:5432"  # Expone el puerto 5432 localmente
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Usa un volumen persistente para almacenar los datos
-    restart: on-failure  # Solo reinicia si falla
+      - postgres_data:/var/lib/postgresql/data
+      - ./db-scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]  # Comprobar si PostgreSQL está activo
-      interval: 10s  # Verifica cada 10 segundos
-      timeout: 5s  # Espera máximo 5 segundos
-      retries: 3  # Reintenta 3 veces antes de fallar
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   # 🛢️ Base de datos MongoDB
   mongodb:
-    image: mongo:6  # Usa la imagen oficial de MongoDB versión 6
+    image: mongo:6
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/voting_system  # URL de conexión a MongoDB
+      - MONGO_URI=mongodb://mongodb:27017/voting_system
     ports:
-      - "27017:27017"  # Expone el puerto 27017 localmente
+      - "27017:27017"
     volumes:
-      - mongo_data:/data/db  # Usa un volumen persistente para los datos
-    restart: on-failure  # Solo reinicia si falla
+      - mongo_data:/data/db
+    restart: on-failure
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet  # Verifica si MongoDB está activo
-      interval: 10s  # Cada 10 segundos
-      timeout: 5s  # Espera máximo 5 segundos
-      retries: 3  # Reintenta 3 veces antes de fallar
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-# 🛑 Definición de volúmenes (para persistencia de datos)
+# 🛑 Volúmenes para bases de datos
 volumes:
   postgres_data:
-    name: voting_postgres_data  # Nombre del volumen de PostgreSQL
+    name: voting_postgres_data
   mongo_data:
-    name: voting_mongo_data  # Nombre del volumen de MongoDB
+    name: voting_mongo_data

@@ -157,12 +157,6 @@ export class HeaderComponent {
       title: 'Jolly completed tasks',
       subtitle: 'Assign her new tasks',
     },
-    {
-      id: 5,
-      img: '/assets/images/profile/user-5.jpg',
-      title: 'Roman Joined the Team!',
-      subtitle: 'Congratulate him',
-    },
   ];
 
   profiledd: profiledd[] = [

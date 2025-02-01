@@ -1,2 +1,28 @@
+# Evita que node_modules se copie en la imagen
 node_modules
+
+# Ignorar archivos de configuración de Git
 .git
+.gitignore
+
+# Archivos de logs y de depuración
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Evita que se copien configuraciones de entorno locales
+.env
+.env.local
+.env.*.local
+
+# Archivos temporales de Angular y construcción
+dist
+.angular
+.cache
+
+# Evitar IDEs y editores (si usas alguno de estos)
+.vscode
+.idea
+.DS_Store
+Thumbs.db

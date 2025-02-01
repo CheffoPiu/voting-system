@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
   selector: 'app-users-dialog',
   standalone: true,
   imports: [
+    CommonModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -18,46 +20,56 @@ import { MatSelectModule } from '@angular/material/select';
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
   ],
   templateUrl: './users-dialog.component.html',
   styleUrls: ['./users-dialog.component.scss'],
 })
-export class UsersDialogComponent {
+export class UsersDialogComponent implements OnInit {
   roles = [
-    { value: 'SuperAdmin', label: 'SuperAdmin' },
-    { value: 'Admin', label: 'Administrador' },
-    { value: 'Presidente', label: 'Presidente' },
-    { value: 'Jugador', label: 'Jugador' },
+    { value: 'ADMIN', label: 'ADMIN' },
+    { value: 'USER', label: 'USER' },
   ];
+  equipos: any[] = [];
+  userForm!: FormGroup;
+  action: string;
   local_data: any;
-  action: any;
-  equipos: any[] = []; // Lista de equipos
 
   constructor(
     public dialogRef: MatDialogRef<UsersDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public dialogData: { data: any; action: string },// Recibimos `data` y `action`
+    @Inject(MAT_DIALOG_DATA) public dialogData: { data: any; action: string },
+    private fb: FormBuilder,
+    private http: HttpClient
   ) {
+    this.action = dialogData.action;
     this.local_data = { ...dialogData.data };
-    this.action = dialogData.action; // Extraemos la acción
   }
 
   ngOnInit(): void {
-    console.log("local_data",this.local_data)
-    this.loadEquipos();
+    this.initForm();
   }
 
-  async loadEquipos(): Promise<void> {
-    try {
-      //this.equipos = await this.equipoService.listEquipos();
-      console.log('Equipos cargados:', this.equipos);
-    } catch (error) {
-      console.error('Error al cargar los equipos:', error);
-    }
+  initForm(): void {
+    this.userForm = this.fb.group({
+      id: [this.local_data.id || null], // Se agrega solo si existe
+      cedula: [this.local_data.cedula || '', [Validators.required, Validators.pattern('[0-9]{10}'), Validators.maxLength(10)]],
+      nombre: [this.local_data.nombre || '', Validators.required],
+      apellido: [this.local_data.apellido || '', Validators.required],
+      email: [this.local_data.email || '', [Validators.required, Validators.email]],
+      password: [this.local_data.password || '', [Validators.required, Validators.minLength(6)]],
+      rol: [this.local_data.rol || '', Validators.required],
+    });
+    
   }
 
   doAction(): void {
-    this.dialogRef.close({ event: this.action, data: this.local_data });
+    console.log("this.action",this.action)
+    if (this.action === 'Delete') {
+      this.dialogRef.close({ event: this.action, data: this.local_data });
+    } else {
+      if (this.userForm.valid) {
+        this.dialogRef.close({ event: this.action, data: this.userForm.value });
+      }
+    }
   }
 
   closeDialog(): void {

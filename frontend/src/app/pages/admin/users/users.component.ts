@@ -6,6 +6,8 @@ import { TablerIconsModule } from 'angular-tabler-icons';
 import { MaterialModule } from 'src/app/material.module';
 import { UsersDialogComponent } from './users-dialog/users-dialog.component';
 import { ToastrService } from 'ngx-toastr';
+import { UserService } from 'src/app/services/user.service';
+import { UserDTO } from '../../../models/user.dto'; // ✅ Importa el DTO
 
 @Component({
   selector: 'app-users',
@@ -19,23 +21,36 @@ import { ToastrService } from 'ngx-toastr';
 })
 
 export class UsersComponent implements OnInit {
-  dataSource = new MatTableDataSource([]);
-  displayedColumns: string[] = ['index', 'nombre', 'correo', 'tipo', 'equipo' , 'acciones'];
+  dataSource = new MatTableDataSource<UserDTO>([]);
+  displayedColumns: string[] = ['index', 'nombre', 'apellido', 'email', 'rol' , 'acciones'];
 
-  constructor(private dialog: MatDialog,
+  constructor(
+    private dialog: MatDialog,
     private toastr: ToastrService,
-  
+    private userService: UserService // ✅ Inyectamos el servicio aquí
   ) {}
 
 
   ngOnInit(): void {
+    console.log("entra aqui")
     this.loadUsuarios();
   }
 
   async loadUsuarios() {
-    //var usuarios = await this.userServices.listUsuarios();
-    //this.dataSource.data = usuarios
-    //console.log("usuarios",usuarios)
+
+   this.userService.listUsuarios().subscribe({
+    next: (usuarios) => {
+      console.log('Usuarios obtenidos:', usuarios);
+      this.dataSource.data = usuarios;
+    },
+    error: (error) => {
+      console.error('❌ Error al obtener usuarios:', error);
+    },
+    complete: () => {
+      console.log('✅ Petición de usuarios completada.');
+    }
+  });
+
   }
 
   applyFilter(filterValue: string): void {
@@ -55,53 +70,90 @@ export class UsersComponent implements OnInit {
       }else if(result?.event === 'Edit'){
         this.editUser(result.data);
       }else if(result?.event === 'Delete'){
-        this.deleteUser(result.data);
+        this.deleteUser(result.data.id);
       }
     });
   }
 
 
-  async saveUser(user: any){
+   /** Crear un nuevo usuario **/
+  async saveUser(user: any) {
     try {
-      console.log("CrearUsuario",user)
-      //await this.userServices.createUsuario(user)
-      await this.loadUsuarios();
+      console.log('Guardando usuario:', user);
 
-      this.toastr.success('Usuario creado correctamente', 'Éxito');
+      this.userService.createUsuario(user).subscribe({
+        next: (response) => {
+          console.log('✅ Usuario creado:', response);
+          this.toastr.success('Usuario creado correctamente', 'Éxito');
+          this.loadUsuarios(); // Recargar la lista de usuarios
+        },
+        error: (error) => {
+          this.toastr.error('Error al crear el usuario', 'Error');
+          console.error('❌ Error al crear usuario:', error);
+        },
+        complete: () => {
+          console.log('✅ Creación de usuario completada.');
+        }
+      });
+
     } catch (error) {
-      console.error('Error al crear el usuario:', error);
+      console.error('❌ Error en la creación del usuario:', error);
       this.toastr.error('Error al crear el usuario', 'Error');
-
     }
   }
 
 
-  async editUser(user: any){
+  /** Editar un usuario existente **/
+  async editUser(user: any) {
     try {
-      delete user.equipo,
-      delete user.__typename,
-      delete user.updatedAt,
-      delete user.createdAt
+      console.log('Editando usuario:', user);
 
-      //await this.userServices.editUsuario(user)
-      await this.loadUsuarios();
-      this.toastr.success('Usuario editado correctamente', 'Éxito');
+      this.userService.editUsuario(user).subscribe({
+        next: (response) => {
+          console.log('✅ Usuario actualizado:', response);
+          this.toastr.success('Usuario actualizado correctamente', 'Éxito');
+          this.loadUsuarios(); // Recargar la lista de usuarios
+        },
+        error: (error) => {
+          this.toastr.error('Error al actualizar el usuario', 'Error');
+          console.error('❌ Error al actualizar usuario:', error);
+        },
+        complete: () => {
+          console.log('✅ Edición de usuario completada.');
+        }
+      });
     } catch (error) {
-      console.error('Error al editar el usuario:', error);
-      this.toastr.error('Error al editar el usuario', 'Error');
-
+      console.error('❌ Error en la edición del usuario:', error);
+      this.toastr.error('Error al actualizar el usuario', 'Error');
     }
   }
 
-  async deleteUser(user: any){
+
+  /** Eliminar un usuario **/
+  async deleteUser(userId: number) {
     try {
-      //await this.userServices.deleteUsuario(user.id)
-      await this.loadUsuarios();
-      this.toastr.success('Usuario eliminado correctamente', 'Éxito');
-      } catch (error) {
-        console.error('Error al eliminar el usuario:', error);
-        this.toastr.error('Error al eliminar el usuario', 'Error');
-      }
+      console.log('🗑️ Eliminando usuario con ID:', userId);
+
+      this.userService.deleteUsuario(userId).subscribe({
+        next: (response) => {
+          console.log('✅ Usuario eliminado:', response);
+          this.toastr.success('Usuario eliminado correctamente', 'Éxito');
+          this.loadUsuarios(); // Recargar la lista de usuarios
+        },
+        error: (error) => {
+          this.toastr.error('Error al eliminar el usuario', 'Error');
+          console.error('❌ Error al eliminar usuario:', error);
+        },
+        complete: () => {
+          console.log('✅ Eliminación de usuario completada.');
+        }
+      });
+
+    } catch (error) {
+      console.error('❌ Error en la eliminación del usuario:', error);
+      this.toastr.error('Error al eliminar el usuario', 'Error');
+    }
   }
+
 
 }
