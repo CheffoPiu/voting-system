@@ -55,6 +55,7 @@ export class CandidatosComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      console.log("result")
       if (result?.event === 'Agregar') {
         this.saveCandidato(result.data);
       } else if (result?.event === 'Edit') {

@@ -26,6 +26,6 @@ export const navItems: NavItem[] = [
     displayName: 'Resultados',
     iconName: 'report-analytics',
     bgcolor: 'primary',
-    route: '/users/votes',
+    route: '/users/results',
   },
 ];

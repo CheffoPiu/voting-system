@@ -61,6 +61,6 @@ export class CandidatosDialogComponent implements OnInit {
   }
 
   closeDialog(): void {
-    this.dialogRef.close();
+    this.dialogRef.close({ event: "Cancelar"});
   }
 }
