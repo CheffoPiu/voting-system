@@ -32,7 +32,7 @@
 
     -- Insertar usuario administrador si no existe
     INSERT INTO usuarios (cedula, nombre, apellido, email, password, rol)
-    SELECT '1234567890', 'Usuario', 'Principal', 'admin@email.com', 'admin123', 'ADMIN'
+    SELECT '1234567890', 'Usuario', 'Principal', 'admin@email.com', '$2b$10$/PkPRVk4l.B4jWNBERFD7.Q8.hRzpeB6Ys42RH6OQ4XrpKXW1umQK', 'ADMIN'
     WHERE NOT EXISTS (
         SELECT 1 FROM usuarios WHERE email = 'admin@email.com'
     );
