@@ -76,6 +76,7 @@ export class FullComponent implements OnInit {
   private isContentWidthFixed = true;
   private isCollapsedWidthFixed = false;
   private htmlElement!: HTMLHtmlElement;
+  user: any;
 
   get isOver(): boolean {
     return this.isMobileScreen;
@@ -188,6 +189,7 @@ export class FullComponent implements OnInit {
     },
   ];
 
+  
   constructor(
     private settings: CoreService,
     private mediaMatcher: MediaMatcher,
@@ -220,7 +222,13 @@ export class FullComponent implements OnInit {
       });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getUserLocal()
+  }
+
+  getUserLocal(){
+    this.user = JSON.parse(localStorage.getItem('user') || '{}');
+  }
 
   ngOnDestroy() {
     this.layoutChangesSubscription.unsubscribe();

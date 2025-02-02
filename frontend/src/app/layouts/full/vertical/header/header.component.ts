@@ -69,6 +69,7 @@ interface quicklinks {
 export class HeaderComponent {
   searchText: string = '';
   navItems = navItems;
+  user: any;
 
   navItemsData = navItems.filter((navitem) => navitem.displayName);
 
@@ -117,6 +118,14 @@ export class HeaderComponent {
     private translate: TranslateService
   ) {
     translate.setDefaultLang('en');
+  }
+
+  ngOnInit(){
+      this.getUserLocal()
+  }
+
+  getUserLocal(){
+    this.user = JSON.parse(localStorage.getItem('user') || '{}');
   }
 
   openDialog() {
