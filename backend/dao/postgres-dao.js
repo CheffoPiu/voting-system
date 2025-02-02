@@ -111,12 +111,15 @@ class PostgresDAO {
      // ✅ Editar usuario
      async updateUser(userId, { cedula, nombre, apellido, email, password, rol }) {
         try {
+             // 1️⃣ Encriptar la contraseña antes de guardarla
+             const hashedPassword = await bcrypt.hash(password, 10);
+
             const query = `
                 UPDATE usuarios 
                 SET cedula = $1, nombre = $2, apellido = $3, email = $4, password = $5, rol = $6
                 WHERE id = $7 RETURNING *;
             `;
-            const values = [cedula, nombre, apellido, email, password, rol, userId];
+            const values = [cedula, nombre, apellido, email, hashedPassword, rol, userId];
             const result = await this.pool.query(query, values);
 
             return result.rows[0] || null;
