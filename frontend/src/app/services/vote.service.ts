@@ -13,6 +13,7 @@ export class VoteService {
 
     constructor(private http: HttpClient) {}
 
+    
     // Método para enviar un voto
     submitVote(vote: VoteDTO): Observable<any> {
         return this.http.post(this.backendUrl, vote);
