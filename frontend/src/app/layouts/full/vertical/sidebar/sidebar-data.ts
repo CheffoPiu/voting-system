@@ -23,6 +23,12 @@ export const navItems: NavItem[] = [
     route: '/admin/logs',
   },
   {
+    displayName: 'Resultados',
+    iconName: 'report-analytics',
+    bgcolor: 'primary',
+    route: '/users/votes',
+  },
+  {
     navCap: 'Home',
   },
   {

@@ -8,6 +8,7 @@ import { UserDTO } from '../models/user.dto'; // Asegúrate de importar tu model
 })
 export class UserService {
   private apiUrl = 'http://localhost:3000/admin/users'; // URL del backend
+  private authUrl = 'http://localhost:3000/auth'; // ✅ Autenticación
 
   constructor(private http: HttpClient) {}
 
@@ -30,4 +31,10 @@ export class UserService {
   deleteUsuario(userId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${userId}`);
   }
+
+  /** 🔹 Login de usuario **/
+  login(credentials: { cedula: string; password: string }): Observable<any> {
+    return this.http.post(`${this.authUrl}/login`, credentials);
+  }
+  
 }

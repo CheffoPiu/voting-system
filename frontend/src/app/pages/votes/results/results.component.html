@@ -1,238 +1,122 @@
-<h2>Resultados en Tiempo Real:</h2>
-<ul>
-    <li *ngFor="let result of results">
-        {{ result.option }}: {{ result.votes }}
-    </li>
-</ul>
-<div style="margin: 20px;">
 <mat-card class="cardWithShadow">
-    <mat-card-content>
-      <div class="align-items-center">
-        <mat-card-title style=" text-align: center" class="m-b-0">RESULTADOS EN TIEMPO REAL</mat-card-title>
-        <div class="m-l-auto">
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
+  <mat-card-content>
+    <mat-card-title style=" text-align: center">RESULTADOS EN TIEMPO REAL</mat-card-title>
+  </mat-card-content>
+</mat-card>
 
-
-<!-- --------------------------------------------------------------------- -->
-<!-- card 1 -->
-<!-- --------------------------------------------------------------------- -->
 <div class="row">
-    <!-- column -->
-    <div class="col-sm-6 col-lg-3">
-      <mat-card class="cardWithShadow">
-        <mat-card-content class="p-y-24">
-          <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
-            >2,545</mat-card-title
-          >
-          <div class="d-flex align-items-center">
-            <span class="mat-body-1">Followers</span>
-            <span class="mat-body-1 text-success m-l-auto">+1.20%</span>
-          </div>
-        </mat-card-content>
+  <div class="col-sm-6 col-lg-3">
+    <mat-card class="cardWithShadow">
+      <mat-card-content class="p-y-24">
+        <span class="mat-body-1 m-b-4 d-block">Total Usuarios</span>
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-24"
+          >{{ totalUsers }}</mat-card-title
+        >
+
         <apx-chart
-          [series]="followersChart.series"
-          [chart]="followersChart.chart"
-          [colors]="followersChart.colors"
-          [stroke]="followersChart.stroke"
-          [dataLabels]="followersChart.dataLabels"
-          [legend]="followersChart.legend"
-          [grid]="followersChart.grid"
-          [xaxis]="followersChart.xaxis"
-          [tooltip]="followersChart.tooltip"
+          [series]="totalearnChart.series"
+          [chart]="totalearnChart.chart"
+          [colors]="totalearnChart.colors"
+          [grid]="totalearnChart.grid"
+          [plotOptions]="totalearnChart.plotOptions"
+          [dataLabels]="totalearnChart.dataLabels"
+          [stroke]="totalearnChart.stroke"
+          [xaxis]="totalearnChart.xaxis"
+          [yaxis]="totalearnChart.yaxis"
+          [fill]="totalearnChart.fill"
+          [tooltip]="totalearnChart.tooltip"
         >
         </apx-chart>
-      </mat-card>
-    </div>
-    <!-- column -->
-    <div class="col-sm-6 col-lg-3">
-      <mat-card class="cardWithShadow">
-        <mat-card-content class="p-y-24">
-          <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
-            >15,480</mat-card-title
-          >
-          <div class="d-flex align-items-center m-b-24">
-            <span class="mat-body-1">Views</span>
-            <span class="mat-body-1 text-error m-l-auto">-4.150%</span>
-          </div>
-          <apx-chart
-            [series]="viewsChart.series"
-            [chart]="viewsChart.chart"
-            [colors]="viewsChart.colors"
-            [plotOptions]="viewsChart.plotOptions"
-            [dataLabels]="viewsChart.dataLabels"
-            [legend]="viewsChart.legend"
-            [grid]="viewsChart.grid"
-            [xaxis]="viewsChart.xaxis"
-            [yaxis]="viewsChart.yaxis"
-            [tooltip]="viewsChart.tooltip"
-          >
-          </apx-chart>
-        </mat-card-content>
-      </mat-card>
-    </div>
-    <!-- column -->
-    <div class="col-sm-6 col-lg-3">
-      <mat-card class="cardWithShadow">
-        <mat-card-content class="p-y-24">
-          <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
-            >2,545</mat-card-title
-          >
-          <div class="d-flex align-items-center">
-            <span class="mat-body-1">Earned</span>
-            <span class="mat-body-1 text-success m-l-auto">+1.20%</span>
-          </div>
-        </mat-card-content>
-        <apx-chart
-          [series]="earnChart.series"
-          [chart]="earnChart.chart"
-          [colors]="earnChart.colors"
-          [stroke]="earnChart.stroke"
-          [dataLabels]="earnChart.dataLabels"
-          [legend]="earnChart.legend"
-          [grid]="earnChart.grid"
-          [xaxis]="earnChart.xaxis"
-          [tooltip]="earnChart.tooltip"
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="col-sm-6 col-lg-3">
+    <mat-card class="cardWithShadow">
+      <mat-card-content class="p-y-24">
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
+          >{{ totalVotes }}</mat-card-title
         >
-        </apx-chart>
-      </mat-card>
-    </div>
-    <!-- column -->
-    <div class="col-sm-6 col-lg-3">
-      <mat-card class="cardWithShadow">
-        <mat-card-content class="p-y-24">
-          <span class="mat-body-1 m-b-4 d-block">Total Earning</span>
-          <mat-card-title class="mat-subtitle-1 f-w-600 m-b-24"
-            >$78,298</mat-card-title
-          >
-  
-          <apx-chart
-            [series]="totalearnChart.series"
-            [chart]="totalearnChart.chart"
-            [colors]="totalearnChart.colors"
-            [grid]="totalearnChart.grid"
-            [plotOptions]="totalearnChart.plotOptions"
-            [dataLabels]="totalearnChart.dataLabels"
-            [stroke]="totalearnChart.stroke"
-            [xaxis]="totalearnChart.xaxis"
-            [yaxis]="totalearnChart.yaxis"
-            [fill]="totalearnChart.fill"
-            [tooltip]="totalearnChart.tooltip"
-          >
-          </apx-chart>
-        </mat-card-content>
-      </mat-card>
-    </div>
-    <!-- column -->
-    <div class="col-12">
-      <mat-card class="cardWithShadow">
-        <mat-card-content class="p-y-24">
-          <div class="d-flex align-items-center justify-content-between">
-            <mat-card-title>Current Value</mat-card-title>
-            <div>
-              <button mat-flat-button color="primary" class="m-r-8">Buy</button>
-              <button mat-stroked-button color="primary">Sell</button>
-            </div>
-          </div>
-          <!-- columns -->
-          <div class="row m-t-24">
-            <div class="col-lg-4">
-              <mat-card class="cardWithShadow m-b-0">
-                <mat-card-content class="p-y-24">
-                  <apx-chart
-                    [series]="incomeChart.series"
-                    [chart]="incomeChart.chart"
-                    [colors]="incomeChart.colors"
-                    [grid]="incomeChart.grid"
-                    [plotOptions]="incomeChart.plotOptions"
-                    [dataLabels]="incomeChart.dataLabels"
-                    [stroke]="incomeChart.stroke"
-                    [xaxis]="incomeChart.xaxis"
-                    [yaxis]="incomeChart.yaxis"
-                    [fill]="incomeChart.fill"
-                    [tooltip]="incomeChart.tooltip"
-                  >
-                  </apx-chart>
-  
-                  <span class="mat-body-1 f-s-16 d-block m-b-4 m-t-24"
-                    >Income</span
-                  >
-  
-                  <div class="d-flex align-items-center">
-                    <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
-                      >$25,260</mat-card-title
-                    >
-                    <span class="mat-body-1 text-success m-l-auto">+1.25%</span>
-                  </div>
-                </mat-card-content>
-              </mat-card>
-            </div>
-            <div class="col-lg-4">
-              <mat-card class="cardWithShadow m-b-0">
-                <mat-card-content class="p-y-24">
-                  <apx-chart
-                    [series]="expancechart.series"
-                    [chart]="expancechart.chart"
-                    [colors]="expancechart.colors"
-                    [grid]="expancechart.grid"
-                    [plotOptions]="expancechart.plotOptions"
-                    [dataLabels]="expancechart.dataLabels"
-                    [stroke]="expancechart.stroke"
-                    [xaxis]="expancechart.xaxis"
-                    [yaxis]="expancechart.yaxis"
-                    [fill]="expancechart.fill"
-                    [tooltip]="expancechart.tooltip"
-                  >
-                  </apx-chart>
-  
-                  <span class="mat-body-1 f-s-16 d-block m-b-4 m-t-24"
-                    >Expance</span
-                  >
-  
-                  <div class="d-flex align-items-center">
-                    <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
-                      >$12,260</mat-card-title
-                    >
-                    <span class="mat-body-1 text-success m-l-auto">+4.25%</span>
-                  </div>
-                </mat-card-content>
-              </mat-card>
-            </div>
-            <div class="col-lg-4">
-              <mat-card class="cardWithShadow m-b-0">
-                <mat-card-content class="p-y-24">
-                  <apx-chart
-                    [series]="currentyearChart.series"
-                    [chart]="currentyearChart.chart"
-                    [colors]="currentyearChart.colors"
-                    [grid]="currentyearChart.grid"
-                    [plotOptions]="currentyearChart.plotOptions"
-                    [dataLabels]="currentyearChart.dataLabels"
-                    [legend]="currentyearChart.legend"
-                    [stroke]="currentyearChart.stroke"
-                    [xaxis]="currentyearChart.xaxis"
-                    [yaxis]="currentyearChart.yaxis"
-                    [fill]="currentyearChart.fill"
-                    [tooltip]="currentyearChart.tooltip"
-                  >
-                  </apx-chart>
-  
-                  <span class="mat-body-1 f-s-16 d-block m-b-4 m-t-24"
-                    >Current Year</span
-                  >
-  
-                  <div class="d-flex align-items-center">
-                    <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
-                      >$98,260
-                    </mat-card-title>
-                    <span class="mat-body-1 text-success m-l-auto">+2.5%</span>
-                  </div>
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div></div>
+        <div class="d-flex align-items-center">
+          <span class="mat-body-1">Votos Emitidos</span>
+          <span class="mat-body-1 text-success m-l-auto">+1.20%</span>
+        </div>
+      </mat-card-content>
+      <apx-chart
+        [series]="followersChart.series"
+        [chart]="followersChart.chart"
+        [colors]="followersChart.colors"
+        [stroke]="followersChart.stroke"
+        [dataLabels]="followersChart.dataLabels"
+        [legend]="followersChart.legend"
+        [grid]="followersChart.grid"
+        [xaxis]="followersChart.xaxis"
+        [tooltip]="followersChart.tooltip"
+      >
+      </apx-chart>
+    </mat-card>
+  </div>
+
+
+  <div class="col-sm-6 col-lg-3">
+    <mat-card class="cardWithShadow">
+      <mat-card-content class="p-y-24">
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4"
+          >{{ usersWhoDidNotVote }}</mat-card-title
+        >
+        <div class="d-flex align-items-center">
+          <span class="mat-body-1">Usuarios Pendientes</span>
+          <span class="mat-body-1 text-success m-l-auto">+1.20%</span>
+        </div>
+      </mat-card-content>
+      <apx-chart
+        [series]="earnChart.series"
+        [chart]="earnChart.chart"
+        [colors]="earnChart.colors"
+        [stroke]="earnChart.stroke"
+        [dataLabels]="earnChart.dataLabels"
+        [legend]="earnChart.legend"
+        [grid]="earnChart.grid"
+        [xaxis]="earnChart.xaxis"
+        [tooltip]="earnChart.tooltip"
+      >
+      </apx-chart>
+    </mat-card>
+  </div>
+</div>
+
+
+<!-- Lista de Candidatos y Porcentajes -->
+<mat-card class="cardWithShadow">
+<mat-card-content>
+  <h2>Resultados por Candidato:</h2>
+  <table mat-table [dataSource]="results" class="mat-elevation-z8">
+    <!-- Nombre -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Candidato </th>
+      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    </ng-container>
+
+    <!-- Partido -->
+    <ng-container matColumnDef="party">
+      <th mat-header-cell *matHeaderCellDef> Partido </th>
+      <td mat-cell *matCellDef="let element"> {{ element.party }} </td>
+    </ng-container>
+
+    <!-- Votos -->
+    <ng-container matColumnDef="votes">
+      <th mat-header-cell *matHeaderCellDef> Votos </th>
+      <td mat-cell *matCellDef="let element"> {{ element.votes }} </td>
+    </ng-container>
+
+    <!-- Porcentaje -->
+    <ng-container matColumnDef="percentage">
+      <th mat-header-cell *matHeaderCellDef> % </th>
+      <td mat-cell *matCellDef="let element"> {{ element.percentage }}% </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['name', 'party', 'votes', 'percentage']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['name', 'party', 'votes', 'percentage'];"></tr>
+  </table>
+</mat-card-content>
+</mat-card>

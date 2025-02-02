@@ -22,7 +22,7 @@ import { UserDTO } from '../../../models/user.dto'; // ✅ Importa el DTO
 
 export class UsersComponent implements OnInit {
   dataSource = new MatTableDataSource<UserDTO>([]);
-  displayedColumns: string[] = ['index', 'nombre', 'apellido', 'email', 'rol' , 'acciones'];
+  displayedColumns: string[] = ['index', 'nombre', 'apellido', 'cedula', 'email', 'rol' , 'acciones'];
 
   constructor(
     private dialog: MatDialog,

@@ -1,42 +1,61 @@
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { MatTableDataSource } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { MaterialModule } from 'src/app/material.module';
+import { VoteService } from 'src/app/services/vote.service';
 
 @Component({
   selector: 'app-logs',
   standalone: true,
   imports: [
-      MaterialModule,
-      TablerIconsModule,
-      MatNativeDateModule,
-      NgScrollbarModule,
-      CommonModule,
-      MatDialogModule,
-      FormsModule,
-    ],
+    MaterialModule,
+    TablerIconsModule,
+    MatNativeDateModule,
+    NgScrollbarModule,
+    CommonModule,
+    MatDialogModule,
+    FormsModule,
+  ],
   templateUrl: './logs.component.html',
-  styleUrl: './logs.component.scss'
+  styleUrls: ['./logs.component.scss']
 })
-export class LogsComponent {
-
-  displayedColumns: string[] = ['index', 'imagen', 'nombre', 'apellido', 'correo' , 'acciones'];
-  dataSource = new MatTableDataSource([]);
+export class LogsComponent implements OnInit {
+  displayedColumns: string[] = ['index', 'nombre', 'apellido', 'cedula', 'email', 'candidato', 
+    'partido', 'timestamp', 'origin', 'userAgent'];
+  dataSource = new MatTableDataSource<any>([]);
   isLoading: boolean = false;
 
+  constructor(
+    private voteService: VoteService
+  ) {}
+
+  ngOnInit(): void {
+    this.fetchLogs();
+  }
 
 
-  openDialog(action: string, obj: any): void {
-    
+  fetchLogs(): void {
+    this.isLoading = true;
+    this.voteService.getVoteLogs().subscribe({
+      next: (data) => {
+        console.log("this.datalogs",data)
+        this.dataSource.data = data; // ✅ Ajusta si la respuesta del backend tiene otro formato
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('❌ Error al obtener logs detallados:', error);
+        this.isLoading = false;
+      }
+    });
   }
 
   applyFilter(filterValue: string): void {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-
 }

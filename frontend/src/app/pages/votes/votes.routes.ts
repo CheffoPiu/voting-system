@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { VoteComponent } from './vote/vote.component';
 import { ResultsComponent } from './results/results.component';
+import { AuthGuard } from 'src/app/guards/auth.guard';
 
 export const VotesRoutes: Routes = [
   {
@@ -10,6 +11,7 @@ export const VotesRoutes: Routes = [
       {
         path: 'votes',
         component: VoteComponent,
+        canActivate: [AuthGuard], 
       }
     ],
   },

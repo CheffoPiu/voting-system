@@ -5,7 +5,7 @@ class CandidatoDTO {
         this.nombre = candidato.nombre;
         this.apellido = candidato.apellido;
         this.partido = candidato.partido;
-        this.numeroLista = candidato.numeroLista;
+        this.numeroLista = candidato.numero_lista;
     }
 }
 

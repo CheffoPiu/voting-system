@@ -6,6 +6,8 @@ const DAOFactory = require('./dao/dao-factory');
 const VoteService = require('./services/vote-service');
 const UserDTO = require('./dto/user-dto'); // ✅ Importa el DTO
 const CandidatoDTO = require('./dto/candidato-dto'); // ✅ Importar DTO
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const server = http.createServer(app);
@@ -39,22 +41,72 @@ io.on('connection', (socket) => {
     });
 });
 
+app.post('/auth/login', async (req, res) => {
+    try {
+        const { cedula, password } = req.body;
+        console.log("📩 Recibiendo credenciales:", { cedula, password });
+
+        if (!cedula || !password) {
+            return res.status(400).json({ error: 'Cédula y contraseña son obligatorios' });
+        }
+
+        const user = await daoPostgres.getUserByCedula(cedula);
+        if (!user) {
+            return res.status(401).json({ error: 'Usuario no encontrado' });
+        }
+
+        console.log("user",user)
+
+        // Verificar contraseña
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Contraseña incorrecta' });
+        }
+
+        console.log("passwordMatch",passwordMatch)
+
+        // Generar token JWT
+        const token = jwt.sign(
+            { userId: user.id, cedula: user.cedula, rol: user.rol },
+            'secreto_super_seguro',
+            { expiresIn: '2h' }
+        );
+
+        res.json({ message: 'Login exitoso', token, user });
+    } catch (err) {
+        console.error('❌ Error en login:', err.message);
+        res.status(500).json({ error: 'Error en el login' });
+    }
+});
+
+
 // Rutas
 app.post('/vote', async (req, res) => {
-    const { userId, candidatoId } = req.body;
     try {
-        await voteService.registerVote(userId, candidatoId);
+        console.log("📩 Recibiendo voto:", req.body);
+        const { userId, candidateId } = req.body;
+
+        if (!userId || !candidateId) {
+            return res.status(400).json({ error: 'Faltan datos: userId y candidateId son obligatorios' });
+        }
+
+        // ✅ Ahora usa `voteService.registerVote` para guardar en ambos
+        await voteService.registerVote(userId, candidateId, req);
+
+        // Obtener resultados actualizados
         const results = await voteService.getResults();
-        
-        // Emitir evento de actualización a todos los clientes conectados
+
+        // Emitir actualización a todos los clientes conectados
         io.emit('updateResults', results);
 
-        res.status(201).json({ message: 'Voto registrado exitosamente' });
+        res.status(201).json({ message: '✅ Voto registrado exitosamente en PostgreSQL y MongoDB' });
     } catch (err) {
-        console.error('Error al registrar el voto:', err.message);
+        console.error('❌ ServerError al registrar el voto:', err.message);
         res.status(500).json({ error: 'Error al registrar el voto' });
     }
 });
+
+
 
 app.get('/results', async (req, res) => {
     try {
@@ -65,6 +117,7 @@ app.get('/results', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener resultados' });
     }
 });
+
 
 
 /**
@@ -204,6 +257,36 @@ app.delete('/admin/candidatos/:id', async (req, res) => {
     } catch (err) {
         console.error('❌ Error al eliminar candidato:', err.message);
         res.status(500).json({ error: 'Error al eliminar candidato' });
+    }
+});
+
+
+app.get('/admin/vote-logs-detailed', async (req, res) => {
+    try {
+        const logs = await voteService.getDetailedVoteLogs();
+        res.json(logs);
+    } catch (err) {
+        console.error('❌ Error al obtener logs detallados:', err.message);
+        res.status(500).json({ error: 'Error al obtener logs detallados' });
+    }
+});
+
+
+
+
+/**
+ * MONGODB
+ */
+
+
+// ✅ Ruta para obtener los logs de votación desde MongoDB
+app.get('/admin/vote-logs', async (req, res) => {
+    try {
+        const logs = await daoMongo.getAuditLogs();
+        res.json(logs);
+    } catch (err) {
+        console.error('❌ Error al obtener logs de votos:', err.message);
+        res.status(500).json({ error: 'Error al obtener logs de auditoría' });
     }
 });
 
