@@ -8,6 +8,8 @@ const UserDTO = require('./dto/user-dto'); // ✅ Importa el DTO
 const CandidatoDTO = require('./dto/candidato-dto'); // ✅ Importar DTO
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const kafka = require('kafka-node');
+const { sendEmail, sendSMS } = require('./services/notificationService');
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +42,33 @@ io.on('connection', (socket) => {
         console.log(`Usuario desconectado: ${socket.id}`);
     });
 });
+
+
+// Kafka Consumer para recibir actualizaciones en tiempo real
+const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER || "192.168.100.53:9092" });
+const consumer = new kafka.Consumer(client, [{ topic: "vote-events", partition: 0 }], { autoCommit: true });
+
+consumer.on("message", async (message) => {
+    console.log("📩 Kafka Consumer recibió un evento:", message.value);
+    const vote = JSON.parse(message.value);
+    console.log("vote",vote)
+    // Notificar al usuario por Email y SMS
+    const emailMessage = `Tu voto ha sido registrado con éxito.\n\nDetalles:\n🆔 Usuario: ${vote.userId}\n🗳️ Candidato: ${vote.candidateId}\n📅 Fecha: ${vote.timestamp}`;
+    const smsMessage = `🗳️ Tu voto fue registrado: Usuario ${vote.userId}, Candidato ${vote.candidateId}`;
+
+    // Datos ficticios de usuarios (Reemplazar con consulta a DB)
+    const userEmail = "yedpump@gmail.com";
+    const userPhone = "+593987164499";
+
+    await sendEmail(userEmail, "Confirmación de Voto", emailMessage);
+    //await sendSMS(userPhone, smsMessage);
+});
+
+consumer.on("error", (err) => {
+    console.error("❌ Error en Kafka Consumer:", err);
+});
+
+
 
 app.post('/auth/login', async (req, res) => {
     try {
@@ -300,5 +329,5 @@ app.get('/', (req, res) => {
 
 // Iniciar servidor
 server.listen(3000, () => {
-    console.log('Servidor corriendo en http://localhost:3000');
+    console.log('Servidor corriendo en http://192.168.100.53:3000');
 });

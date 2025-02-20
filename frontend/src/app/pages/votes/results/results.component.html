@@ -9,7 +9,7 @@
   <div class="col-sm-6 col-lg-3">
     <mat-card class="cardWithShadow">
       <mat-card-content class="p-y-24">
-        <span class="mat-body-1 m-b-4 d-block">Total Usuarios</span>
+        <span class="mat-body-1 m-b-4 d-block">Total Usuarios Registrados</span>
         <mat-card-title class="mat-subtitle-1 f-w-600 m-b-24"
           >{{ totalUsers }}</mat-card-title
         >
@@ -84,13 +84,42 @@
       </apx-chart>
     </mat-card>
   </div>
+
+
+  <div class="col-sm-6 col-lg-3">
+    <mat-card class="cardWithShadow">
+      <mat-card-content class="p-y-24">
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4">
+          {{ topCandidate?.name || 'Sin datos' }}
+        </mat-card-title>
+        <div class="d-flex align-items-center">
+          <span class="mat-body-1">Candidato más votado</span>
+          <span class="mat-body-1 text-success m-l-auto">{{ topCandidate?.votes || 0 }} votos</span>
+        </div>
+      </mat-card-content>
+      <apx-chart
+        [series]="candidato.series"
+        [chart]="candidato.chart"
+        [colors]="candidato.colors"
+        [stroke]="candidato.stroke"
+        [dataLabels]="candidato.dataLabels"
+        [legend]="candidato.legend"
+        [grid]="candidato.grid"
+        [xaxis]="candidato.xaxis"
+        [tooltip]="candidato.tooltip"
+      >
+      </apx-chart>
+    </mat-card>
+  </div>
+  
 </div>
 
 
 <!-- Lista de Candidatos y Porcentajes -->
-<mat-card class="cardWithShadow">
-<mat-card-content>
+ <mat-card class="cardWithShadow text-center">
+  <mat-card-content class="p-24">
   <h2>Resultados por Candidato:</h2>
+  <div class="table-responsive example-container m-t-30 ">
   <table mat-table [dataSource]="results" class="mat-elevation-z8">
     <!-- Nombre -->
     <ng-container matColumnDef="name">
@@ -119,6 +148,7 @@
     <tr mat-header-row *matHeaderRowDef="['name', 'party', 'votes', 'percentage']"></tr>
     <tr mat-row *matRowDef="let row; columns: ['name', 'party', 'votes', 'percentage'];"></tr>
   </table>
+</div>  
 </mat-card-content>
 </mat-card>
 </div>

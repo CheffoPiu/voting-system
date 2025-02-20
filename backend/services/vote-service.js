@@ -1,3 +1,5 @@
+const sendKafkaMessage = require('./kafkaProducer'); // ✅ Importar Kafka Producer
+
 class VoteService {
     constructor(daoPostgres, daoMongo) {
         this.daoPostgres = daoPostgres;
@@ -10,8 +12,24 @@ class VoteService {
             if (!userId || !candidateId) {
                 throw new Error("userId y candidateId son requeridos");
             }
+
+            // ✅ Registrar el voto en PostgreSQL
             await this.daoPostgres.createVote(userId, candidateId);
+
+            // ✅ Guardar log en MongoDB
             await this.daoMongo.logVote(userId, candidateId, req);
+            
+            // ✅ Enviar evento a Kafka
+            const voteEvent = {
+                userId,
+                candidateId,
+                timestamp: new Date().toISOString(),
+                ip: req.ip,
+                userAgent: req.headers['user-agent']
+            };
+            sendKafkaMessage("vote-events", voteEvent);
+            console.log(`📩 Evento enviado a Kafka:`, voteEvent);
+
         } catch (err) {
             console.error('Error en servicio de votación:', err.message);
             throw err;
@@ -22,7 +40,7 @@ class VoteService {
         try {
             // Obtener total de usuarios
             const totalUsers = await this.daoPostgres.getTotalUsers();
-            
+
             // Obtener votos por candidato
             const votes = await this.daoPostgres.getResults();
     
@@ -39,8 +57,8 @@ class VoteService {
             }));
     
             // Calcular cantidad de personas que aún no han votado
-            const usersWhoDidNotVote = totalUsers - totalVotes;
-    
+            const usersWhoDidNotVote = Math.max(0, totalUsers - totalVotes);
+
             return {
                 totalUsers,
                 totalVotes,

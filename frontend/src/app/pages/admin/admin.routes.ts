@@ -11,6 +11,9 @@ export const AdminRoutes: Routes = [
       {
         path: 'candidatos',
         component: CandidatosComponent,
+        data: {
+          title: 'Candidatos',
+        },
       }
     ],
   },
@@ -20,6 +23,9 @@ export const AdminRoutes: Routes = [
       {
         path: 'users',
         component: UsersComponent,
+        data: {
+          title: 'Usuarios',
+        },
       }
     ],
   },
@@ -29,6 +35,9 @@ export const AdminRoutes: Routes = [
       {
         path: 'logs',
         component: LogsComponent,
+        data: {
+          title: 'Logs',
+        },
       }
     ],
   },

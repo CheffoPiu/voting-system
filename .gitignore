@@ -15,3 +15,6 @@ mongo_data/
 # IDEs
 .vscode/
 .idea/
+
+.env
+backend/.env

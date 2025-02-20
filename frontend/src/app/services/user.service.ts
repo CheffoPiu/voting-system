@@ -7,8 +7,8 @@ import { UserDTO } from '../models/user.dto'; // Asegúrate de importar tu model
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'http://localhost:3000/admin/users'; // URL del backend
-  private authUrl = 'http://localhost:3000/auth'; // ✅ Autenticación
+  private apiUrl = 'http://192.168.100.53:3000/admin/users'; // URL del backend
+  private authUrl = 'http://192.168.100.53:3000/auth'; // ✅ Autenticación
 
   constructor(private http: HttpClient) {}
 

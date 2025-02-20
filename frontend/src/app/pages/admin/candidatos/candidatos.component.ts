@@ -86,6 +86,7 @@ export class CandidatosComponent implements OnInit {
   }
 
   async editCandidato(candidato: CandidatoDTO) {
+    console.log("candidado",candidato)
     this.candidatoService.editCandidato(candidato).subscribe({
       next: () => {
         this.toastr.success('Candidato actualizado correctamente', 'Éxito');
