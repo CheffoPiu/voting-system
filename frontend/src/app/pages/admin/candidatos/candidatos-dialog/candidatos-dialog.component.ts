@@ -42,6 +42,7 @@ export class CandidatosDialogComponent implements OnInit {
 
   initForm(): void {
     this.candidatoForm = this.fb.group({
+      id: [this.local_data.id || null], // Se agrega solo si existe
       cedula: [this.local_data.cedula || '', [Validators.required, Validators.pattern('[0-9]{10}'), Validators.maxLength(10)]],
       nombre: [this.local_data.nombre || '', Validators.required],
       apellido: [this.local_data.apellido || '', Validators.required],

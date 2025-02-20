@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  API_URL: 'http://localhost:3000' // ⚠ Ajusta esto según tu backend
+  API_URL: 'http://192.168.100.53:3000' // ⚠ Ajusta esto según tu backend
 };
 
 /*

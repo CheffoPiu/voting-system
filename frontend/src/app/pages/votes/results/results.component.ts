@@ -29,12 +29,15 @@ export class ResultsComponent implements OnInit {
   totalUsers: number = 0;
   totalVotes: number = 0;
   usersWhoDidNotVote: number = 0;
-  
+  topCandidate: { name: string; votes: number } | null = null;
 
   public followersChart: Partial<ChartOptions> | any;
   public totalearnChart: Partial<ChartOptions> | any;
   public earnChart: Partial<ChartOptions> | any;
-
+  public incomeChart: Partial<ChartOptions> | any;
+  public expancechart: Partial<ChartOptions> | any;
+  public currentyearChart: Partial<ChartOptions> | any;
+  public candidato: Partial<ChartOptions> | any;
 
   constructor(private webSocketService: WebSocketService,
     private voteService: VoteService 
@@ -204,6 +207,256 @@ export class ResultsComponent implements OnInit {
       },
     };
 
+    this.candidato = {
+      series: [
+        {
+          name: '',
+          data: [0, 3, 10, 2, 8, 1, 5, 1],
+        },
+      ],
+      chart: {
+        type: 'area',
+        fontFamily: "'Plus Jakarta Sans', sans-serif;",
+        foreColor: '#adb0bb',
+        toolbar: {
+          show: false,
+        },
+        height: 90,
+        sparkline: {
+          enabled: true,
+        },
+      },
+      colors: ['#5D87FF'],
+      stroke: {
+        curve: 'straight',
+        width: 2,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      legend: {
+        show: false,
+      },
+      grid: {
+        show: false,
+      },
+      xaxis: {
+        axisBorder: {
+          show: true,
+        },
+        axisTicks: {
+          show: false,
+        },
+      },
+      tooltip: {
+        theme: 'dark',
+      },
+    };
+
+    // income chart
+    this.incomeChart = {
+      series: [
+        {
+          name: '',
+          data: [2.5, 3.7, 3.2, 2.6, 1.9, 2.5],
+        },
+        {
+          name: '',
+          data: [-2.8, -1.1, -3.0, -1.5, -1.9, -2.8],
+        },
+      ],
+      chart: {
+        type: 'bar',
+        fontFamily: "'Plus Jakarta Sans', sans-serif;",
+        foreColor: '#adb0bb',
+        toolbar: {
+          show: false,
+        },
+        height: 200,
+        stacked: true,
+        sparkline: {
+          enabled: true,
+        },
+      },
+      colors: ['#5D87FF', '#5D87FF'],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          barHeight: '60%',
+          columnWidth: '20%',
+          borderRadius: [6],
+          borderRadiusApplication: 'end',
+          borderRadiusWhenStacked: 'all',
+        },
+      },
+      stroke: {
+        show: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      legend: {
+        show: false,
+      },
+      grid: {
+        show: false,
+        padding: {
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+        },
+      },
+      yaxis: {
+        min: -5,
+        max: 5,
+        tickAmount: 4,
+      },
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        axisTicks: {
+          show: false,
+        },
+      },
+      tooltip: {
+        theme: 'dark',
+        x: {
+          show: false,
+        },
+      },
+    };
+
+    // expance chart
+    this.expancechart = {
+      series: [
+        {
+          name: '',
+          data: [2.5, 3.7, 3.2, 2.6, 1.9, 2.5],
+        },
+        {
+          name: '',
+          data: [-2.8, -1.1, -3.0, -1.5, -1.9, -2.8],
+        },
+      ],
+      chart: {
+        type: 'bar',
+        fontFamily: "'Plus Jakarta Sans', sans-serif;",
+        foreColor: '#adb0bb',
+        toolbar: {
+          show: false,
+        },
+        height: 200,
+        stacked: true,
+        sparkline: {
+          enabled: true,
+        },
+      },
+      colors: ['#49BEFF', '#49BEFF'],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          barHeight: '60%',
+          columnWidth: '20%',
+          borderRadius: [6],
+          borderRadiusApplication: 'end',
+          borderRadiusWhenStacked: 'all',
+        },
+      },
+      stroke: {
+        show: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      legend: {
+        show: false,
+      },
+      grid: {
+        show: false,
+        padding: {
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+        },
+      },
+      yaxis: {
+        min: -5,
+        max: 5,
+        tickAmount: 4,
+      },
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        axisTicks: {
+          show: false,
+        },
+      },
+      tooltip: {
+        theme: 'dark',
+        x: {
+          show: false,
+        },
+      },
+    };
+
+    // current year chart
+    this.currentyearChart = {
+      series: [55, 55, 55],
+      chart: {
+        type: 'donut',
+        fontFamily: "'Plus Jakarta Sans', sans-serif;",
+
+        toolbar: {
+          show: false,
+        },
+        height: 220,
+      },
+      labels: ['Income', 'Current', 'Expance'],
+      colors: ['#5D87FF', '#ECF2FF', '#49BEFF'],
+      plotOptions: {
+        pie: {
+          startAngle: 0,
+          endAngle: 360,
+          donut: {
+            size: '89%',
+            background: 'transparent',
+
+            labels: {
+              show: true,
+              name: {
+                show: true,
+                offsetY: 7,
+              },
+              value: {
+                show: false,
+              },
+              total: {
+                show: true,
+                color: '#2A3547',
+                fontSize: '20px',
+                fontWeight: '600',
+                label: '$98,260',
+              },
+            },
+          },
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: false,
+      },
+      legend: {
+        show: false,
+      },
+      tooltip: {
+        theme: 'dark',
+        x: {
+          show: false,
+        },
+      },
+    };
 
   }
 
@@ -224,10 +477,19 @@ export class ResultsComponent implements OnInit {
   }
 
   updateResults(data: any): void {
-    console.log("dataResuyklt",data)
+    console.log("dataResult", data);
     this.totalUsers = data.totalUsers;
     this.totalVotes = data.totalVotes;
-    this.usersWhoDidNotVote = data.usersWhoDidNotVote;
+    this.usersWhoDidNotVote = Math.max(0, data.totalUsers - data.totalVotes);
     this.results = data.results;
+    console.log("dataResults", this.results);
+    // Encontrar el candidato con más votos
+    if (this.results.length > 0) {
+      // Encontrar el candidato con más votos
+      this.topCandidate = this.results.reduce((max, candidate) => 
+        Number(candidate.votes) > Number(max.votes) ? candidate : max, this.results[0]);
+
+    }
   }
+  
 }

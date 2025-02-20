@@ -7,9 +7,9 @@ import { VoteDTO } from '../models/vote.dto';
     providedIn: 'root',
 })
 export class VoteService {
-    private backendUrl = 'http://localhost:3000/vote'; // URL del backend
-    private resultsUrl = 'http://localhost:3000/results'; // Nueva URL para obtener resultados
-    private logsUrl = 'http://localhost:3000/admin/vote-logs-detailed';
+    private backendUrl = 'http://192.168.100.53:3000/vote'; // URL del backend
+    private resultsUrl = 'http://192.168.100.53:3000/results'; // Nueva URL para obtener resultados
+    private logsUrl = 'http://192.168.100.53:3000/admin/vote-logs-detailed';
 
     constructor(private http: HttpClient) {}
 
