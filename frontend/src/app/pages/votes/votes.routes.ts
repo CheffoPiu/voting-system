@@ -12,6 +12,9 @@ export const VotesRoutes: Routes = [
         path: 'votes',
         component: VoteComponent,
         canActivate: [AuthGuard], 
+        data: {
+          title: 'Votos',
+        },
       }
     ],
   },
@@ -21,6 +24,9 @@ export const VotesRoutes: Routes = [
       {
         path: 'results',
         component: ResultsComponent,
+        data: {
+          title: 'Resultados',
+        },
       }
     ],
   },
