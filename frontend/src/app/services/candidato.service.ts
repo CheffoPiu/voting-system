@@ -7,7 +7,7 @@ import { CandidatoDTO } from '../models/candidato.dto';
   providedIn: 'root',
 })
 export class CandidatoService {
-  private apiUrl = 'http://192.168.100.53:3000/admin/candidatos'; // URL del backend
+  private apiUrl = 'http://localhost:3000/admin/candidatos'; // URL del backend
 
   constructor(private http: HttpClient) {}
 

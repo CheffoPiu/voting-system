@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
 
 
 // Kafka Consumer para recibir actualizaciones en tiempo real
-const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER || "192.168.100.53:9092" });
+const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER || "localhost:9092" });
 const consumer = new kafka.Consumer(client, [{ topic: "vote-events", partition: 0 }], { autoCommit: true });
 
 consumer.on("message", async (message) => {
@@ -329,5 +329,5 @@ app.get('/', (req, res) => {
 
 // Iniciar servidor
 server.listen(3000, () => {
-    console.log('Servidor corriendo en http://192.168.100.53:3000');
+    console.log('Servidor corriendo en http://localhost:3000');
 });

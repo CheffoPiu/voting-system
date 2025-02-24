@@ -45,6 +45,7 @@ export class AppSideLoginComponent {
     console.log("credentials",credentials)
     this.userService.login(credentials).subscribe({
       next: (response) => {
+        console.log("Paso suscripcion",response)
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
 
