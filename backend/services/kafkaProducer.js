@@ -1,6 +1,6 @@
 const kafka = require('kafka-node');
 
-const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER || "192.168.100.53:9092" });
+const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER || "localhost:9092" });
 const producer = new kafka.Producer(client);
 
 producer.on("ready", () => {

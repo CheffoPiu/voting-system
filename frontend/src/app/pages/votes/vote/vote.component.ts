@@ -25,6 +25,8 @@ export class VoteComponent implements OnInit {
   selectedOption: string = '';
   userId: any
   candidatos: any[] = []; // Se llenará con datos del backend
+  autoVotingInterval: any = null; // Guardará el intervalo de votación automática
+  votingSpeed: number = 1000; // Tiempo entre votos (en milisegundos)
 
   constructor(private voteService: VoteService,
     private candidatoService: CandidatoService
@@ -71,21 +73,58 @@ export class VoteComponent implements OnInit {
   
 
 
-  submitVote(): void {
-    if (!this.selectedOption) {
-      alert('Selecciona una opción antes de votar.');
+  submitVote(candidatoId?: string): void {
+    const selectedCandidato = candidatoId || this.selectedOption;
+    if (!selectedCandidato) {
+      alert('Selecciona un candidato antes de votar.');
       return;
     }
 
-    const vote = new VoteDTO(this.userId, this.selectedOption);
-    console.log("Enviando voto:", vote);
-    
+    const vote = new VoteDTO(this.userId, selectedCandidato);
+    console.log("🎲 Enviando voto:", vote);
+
     this.voteService.submitVote(vote).subscribe({
-      next: () => alert('✅ Voto registrado con éxito.'),
+      next: () => console.log('✅ Voto registrado con éxito.'),
       error: (err) => {
-        console.error('❌ Error al registrar el voto C:', err);
+        console.error('❌ Error al registrar el voto:', err);
       },
     });
+  }
+
+  /**
+   * Inicia la votación automática con un intervalo de tiempo configurable.
+   */
+  startAutoVoting(): void {
+    if (this.autoVotingInterval) {
+      console.warn('⚠️ La votación automática ya está en marcha.');
+      return;
+    }
+
+    this.autoVotingInterval = setInterval(() => {
+      if (this.candidatos.length === 0) {
+        console.warn('⚠️ No hay candidatos disponibles para votar.');
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * this.candidatos.length);
+      const randomCandidato = this.candidatos[randomIndex];
+
+      console.log(`🗳 Votando por: ${randomCandidato.nombre} ${randomCandidato.apellido}`);
+      this.submitVote(randomCandidato.id);
+    }, this.votingSpeed);
+
+    console.log(`🚀 Votación automática iniciada cada ${this.votingSpeed}ms.`);
+  }
+
+  /**
+   * Detiene la votación automática.
+   */
+  stopAutoVoting(): void {
+    if (this.autoVotingInterval) {
+      clearInterval(this.autoVotingInterval);
+      this.autoVotingInterval = null;
+      console.log('🛑 Votación automática detenida.');
+    }
   }
   
 }
