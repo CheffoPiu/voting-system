@@ -26,7 +26,7 @@ export class VoteComponent implements OnInit {
   userId: any
   candidatos: any[] = []; // Se llenará con datos del backend
   autoVotingInterval: any = null; // Guardará el intervalo de votación automática
-  votingSpeed: number = 1000; // Tiempo entre votos (en milisegundos)
+  votingSpeed: number = 2000; // Tiempo entre votos (en milisegundos)
 
   constructor(private voteService: VoteService,
     private candidatoService: CandidatoService
