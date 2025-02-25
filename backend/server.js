@@ -14,6 +14,8 @@ const { sendEmail, sendSMS } = require('./services/notificationService');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
+// Importa Lodash al inicio del archivo
+const _ = require('lodash');
 
 app.use(cors());
 app.use(express.json());
@@ -44,6 +46,26 @@ io.on('connection', (socket) => {
 });
 
 
+//JWT verifyToken
+// Middleware para verificar JWT
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Token requerido' });
+    }
+
+    jwt.verify(token, 'secreto_super_seguro', (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: 'Token inválido o expirado' });
+        }
+        req.user = user;  // Añadir info decodificada del token al req
+        next();
+    });
+};
+
+
 // Kafka Consumer para recibir actualizaciones en tiempo real
 const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER || "localhost:9092" });
 const consumer = new kafka.Consumer(client, [{ topic: "vote-events", partition: 0 }], { autoCommit: true });
@@ -60,7 +82,7 @@ consumer.on("message", async (message) => {
     const userEmail = "yedpump@gmail.com";
     const userPhone = "+593987164499";
 
-    await sendEmail(userEmail, "Confirmación de Voto", emailMessage);
+    //await sendEmail(userEmail, "Confirmación de Voto", emailMessage);
     //await sendSMS(userPhone, smsMessage);
 });
 
@@ -109,6 +131,21 @@ app.post('/auth/login', async (req, res) => {
 });
 
 
+// Esta función obtiene resultados y los emite vía WebSockets
+const emitResults = async () => {
+    try {
+        const results = await voteService.getResults();
+        io.emit('updateResults', results);
+        console.log("📡 Resultados enviados por WebSockets");
+    } catch (err) {
+        console.error("❌ Error al emitir resultados:", err.message);
+    }
+};
+
+// Configura throttle para controlar la frecuencia de envío (por ejemplo, 5 segundos)
+const throttledEmitResults = _.throttle(emitResults, 10000, { trailing: true });
+
+
 // Rutas
 app.post('/vote', async (req, res) => {
     try {
@@ -123,10 +160,13 @@ app.post('/vote', async (req, res) => {
         await voteService.registerVote(userId, candidateId, req);
 
         // Obtener resultados actualizados
-        const results = await voteService.getResults();
+        //const results = await voteService.getResults();
 
         // Emitir actualización a todos los clientes conectados
-        io.emit('updateResults', results);
+        //io.emit('updateResults', results);
+
+        // Llama a la función throttled (no se ejecutará más de una vez cada 5 segundos)
+        throttledEmitResults();
 
         res.status(201).json({ message: '✅ Voto registrado exitosamente en PostgreSQL y MongoDB' });
     } catch (err) {
@@ -252,7 +292,7 @@ app.post('/admin/candidatos', async (req, res) => {
     }
 });
 
-app.get('/admin/candidatos', async (req, res) => {
+app.get('/admin/candidatos', verifyToken, async (req, res) => {
     try {
         const candidatos = await daoPostgres.getCandidatos();
         const candidatosDTO = candidatos.map(candidato => new CandidatoDTO(candidato)); // Convierte a DTO
@@ -331,3 +371,6 @@ app.get('/', (req, res) => {
 server.listen(3000, () => {
     console.log('Servidor corriendo en http://localhost:3000');
 });
+
+
+
