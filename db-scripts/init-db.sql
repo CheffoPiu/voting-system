@@ -39,3 +39,284 @@
 
     -- Mensaje de confirmación
     SELECT '✅ Tablas creadas correctamente' AS status;
+
+--Procedimientos Almacenados SP
+
+
+-- reateUser
+CREATE OR REPLACE FUNCTION public.sp_create_user(
+    p_cedula VARCHAR,
+    p_nombre VARCHAR,
+    p_apellido VARCHAR,
+    p_email VARCHAR,
+    p_password VARCHAR,
+    p_rol VARCHAR DEFAULT 'USER'
+)
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    email VARCHAR,
+    rol VARCHAR
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    INSERT INTO usuarios (cedula, nombre, apellido, email, password, rol)
+    VALUES (p_cedula, p_nombre, p_apellido, p_email, p_password, p_rol)
+    RETURNING usuarios.id, usuarios.cedula, usuarios.nombre, usuarios.apellido, usuarios.email, usuarios.rol;
+END;
+$$ LANGUAGE plpgsql;
+
+-- getUsers
+CREATE OR REPLACE FUNCTION public.sp_get_users()
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    email VARCHAR,
+    rol VARCHAR
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT usuarios.id, usuarios.cedula, usuarios.nombre, usuarios.apellido, usuarios.email, usuarios.rol 
+    FROM usuarios;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- getTotalUsers
+CREATE OR REPLACE FUNCTION public.sp_get_total_users()
+RETURNS INTEGER AS $$
+DECLARE
+    total INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO total FROM usuarios;
+    RETURN total;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- getUsersByIds
+CREATE OR REPLACE FUNCTION public.sp_get_users_by_ids(user_ids INT[])
+RETURNS TABLE (
+    id INT,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    email VARCHAR,
+    cedula VARCHAR
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT usuarios.id, usuarios.nombre, usuarios.apellido, usuarios.email, usuarios.cedula
+    FROM usuarios
+    WHERE usuarios.id = ANY(user_ids);
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- getUserByCedula
+CREATE OR REPLACE FUNCTION public.sp_get_user_by_cedula(p_cedula VARCHAR)
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    email VARCHAR,
+    password VARCHAR,
+    rol VARCHAR
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT usuarios.id, usuarios.cedula, usuarios.nombre, usuarios.apellido, usuarios.email, usuarios.password, usuarios.rol
+    FROM usuarios
+    WHERE usuarios.cedula = p_cedula;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- updateUser
+CREATE OR REPLACE FUNCTION public.sp_update_user(
+    p_user_id INT,
+    p_cedula VARCHAR,
+    p_nombre VARCHAR,
+    p_apellido VARCHAR,
+    p_email VARCHAR,
+    p_password VARCHAR,
+    p_rol VARCHAR
+)
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    email VARCHAR,
+    rol VARCHAR
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    UPDATE usuarios
+    SET cedula = p_cedula,
+        nombre = p_nombre,
+        apellido = p_apellido,
+        email = p_email,
+        password = p_password,
+        rol = p_rol
+    WHERE id = p_user_id
+    RETURNING usuarios.id, usuarios.cedula, usuarios.nombre, usuarios.apellido, usuarios.email, usuarios.rol;
+END;
+$$ LANGUAGE plpgsql;
+
+-- deleteUser
+CREATE OR REPLACE FUNCTION public.sp_delete_user(p_user_id INT)
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    email VARCHAR,
+    rol VARCHAR
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    DELETE FROM usuarios
+    WHERE id = p_user_id
+    RETURNING usuarios.id, usuarios.cedula, usuarios.nombre, usuarios.apellido, usuarios.email, usuarios.rol;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- createCandidato
+CREATE OR REPLACE FUNCTION public.sp_create_candidato(
+    p_cedula VARCHAR,
+    p_nombre VARCHAR,
+    p_apellido VARCHAR,
+    p_partido VARCHAR,
+    p_numero_lista INT
+)
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    partido VARCHAR,
+    numero_lista INT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    INSERT INTO candidatos (cedula, nombre, apellido, partido, numero_lista)
+    VALUES (p_cedula, p_nombre, p_apellido, p_partido, p_numero_lista)
+    RETURNING candidatos.id, candidatos.cedula, candidatos.nombre, candidatos.apellido, candidatos.partido, candidatos.numero_lista;
+END;
+$$ LANGUAGE plpgsql;
+
+-- getCandidatos
+CREATE OR REPLACE FUNCTION public.sp_get_candidatos()
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    partido VARCHAR,
+    numero_lista INT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT id, cedula, nombre, apellido, partido, numero_lista FROM candidatos;
+END;
+$$ LANGUAGE plpgsql;
+
+-- updateCandidato
+CREATE OR REPLACE FUNCTION public.sp_update_candidato(
+    p_id INT,
+    p_cedula VARCHAR,
+    p_nombre VARCHAR,
+    p_apellido VARCHAR,
+    p_partido VARCHAR,
+    p_numero_lista INT
+)
+RETURNS TABLE (
+    id INT,
+    cedula VARCHAR,
+    nombre VARCHAR,
+    apellido VARCHAR,
+    partido VARCHAR,
+    numero_lista INT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    UPDATE candidatos SET
+        cedula = p_cedula,
+        nombre = p_nombre,
+        apellido = p_apellido,
+        partido = p_partido,
+        numero_lista = p_numero_lista
+    WHERE id = p_id
+    RETURNING id, cedula, nombre, apellido, partido, numero_lista;
+END;
+$$ LANGUAGE plpgsql;
+
+-- deleteCandidato
+CREATE OR REPLACE FUNCTION public.sp_delete_candidato(p_id INT)
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM candidatos WHERE id = p_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- getCandidatesByIds
+CREATE OR REPLACE FUNCTION public.sp_get_candidates_by_ids(p_candidate_ids INT[])
+RETURNS TABLE (
+    id INT,
+    nombre VARCHAR,
+    partido VARCHAR
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT id, nombre, partido
+    FROM candidatos
+    WHERE id = ANY(p_candidate_ids);
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- createVote
+CREATE OR REPLACE FUNCTION public.sp_create_vote(
+    p_user_id INT,
+    p_candidate_id INT
+)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO votes (user_id, candidate_id, fecha_voto)
+    VALUES (p_user_id, p_candidate_id, NOW());
+END;
+$$ LANGUAGE plpgsql;
+
+-- getResults
+CREATE OR REPLACE FUNCTION public.sp_get_results()
+RETURNS TABLE (
+    nombre VARCHAR,
+    partido VARCHAR,
+    numero_lista INT,
+    votos BIGINT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT c.nombre, c.partido, c.numero_lista, COUNT(v.id) as votos
+    FROM votes v
+    JOIN candidatos c ON v.candidate_id = c.id
+    GROUP BY c.id, c.nombre, c.partido, c.numero_lista;
+END;
+$$ LANGUAGE plpgsql;

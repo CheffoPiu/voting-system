@@ -84,7 +84,7 @@ export class VoteComponent implements OnInit {
     console.log("🎲 Enviando voto:", vote);
 
     this.voteService.submitVote(vote).subscribe({
-      next: () => console.log('✅ Voto registrado con éxito.'),
+      next: () =>alert('✅ Voto registrado con éxito.'),
       error: (err) => {
         console.error('❌ Error al registrar el voto:', err);
       },

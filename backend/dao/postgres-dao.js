@@ -38,122 +38,112 @@ class PostgresDAO {
 
     async createUser({ cedula, nombre, apellido, email, password, rol }) {
         try {
-
-            // 1️⃣ Encriptar la contraseña antes de guardarla
+            // ✅ Encriptar contraseña primero desde Node.js
             const hashedPassword = await bcrypt.hash(password, 10);
-
-            const query = `
-                INSERT INTO usuarios (cedula, nombre, apellido, email, password, rol) 
-                VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`;
-            
+    
+            // ✅ Llamar al Stored Procedure en PostgreSQL
+            const query = `SELECT * FROM sp_create_user($1, $2, $3, $4, $5, $6);`;
             const values = [cedula, nombre, apellido, email, hashedPassword, rol || 'USER'];
+    
             const result = await this.pool.query(query, values);
-
-            return result.rows[0]; // Devuelve el usuario creado con ID generado
+            return result.rows[0]; // Devuelve el usuario creado
         } catch (err) {
-            console.error('❌ Error al registrar usuario en PostgreSQL:', err.message);
-            throw err;
-        }
-    }
-
-
-    async getUsers() {
-        try {
-            const result = await this.pool.query(
-                `SELECT id, cedula, nombre, apellido, email, rol FROM usuarios`
-            );
-            return result.rows; // Devuelve los usuarios en formato de objeto
-        } catch (err) {
-            console.error('❌ Error al obtener usuarios de PostgreSQL:', err.message);
-            throw err;
-        }
-    }
-
-
-    async getTotalUsers() {
-        try {
-            const result = await this.pool.query('SELECT COUNT(*) AS total FROM usuarios;');
-            return parseInt(result.rows[0].total, 10); // Convertir a número
-        } catch (err) {
-            console.error('❌ Error al obtener el total de usuarios:', err.message);
+            console.error('❌ Error al registrar usuario con SP en PostgreSQL:', err.message);
             throw err;
         }
     }
     
 
-     // ✅ Obtener usuario por ID
-    async getUsersByIds(userIds) {
+
+    async getUsers() {
         try {
-            if (userIds.length === 0) return [];
-            const query = `SELECT id, nombre, apellido, email, cedula FROM usuarios WHERE id = ANY($1)`;
-            const result = await this.pool.query(query, [userIds]);
+            const result = await this.pool.query(`SELECT * FROM sp_get_users();`);
             return result.rows;
         } catch (err) {
-            console.error('❌ Error al obtener usuarios por IDs:', err.message);
+            console.error('❌ Error al obtener usuarios (SP):', err.message);
             throw err;
         }
     }
+    
 
+
+    async getTotalUsers() {
+        try {
+            const result = await this.pool.query('SELECT sp_get_total_users() AS total;');
+            return parseInt(result.rows[0].total, 10);
+        } catch (err) {
+            console.error('❌ Error al obtener total usuarios (SP):', err.message);
+            throw err;
+        }
+    }
+    
+    
+     // ✅ Obtener usuario por ID
+     async getUsersByIds(userIds) {
+        try {
+            if (userIds.length === 0) return [];
+            const query = `SELECT * FROM sp_get_users_by_ids($1::INT[]);`;
+            const result = await this.pool.query(query, [userIds]);
+            return result.rows;
+        } catch (err) {
+            console.error('❌ Error al obtener usuarios por IDs (SP):', err.message);
+            throw err;
+        }
+    }
+    
 
     async getUserByCedula(cedula) {
         try {
-            const result = await this.pool.query(
-                `SELECT * FROM usuarios WHERE cedula = $1`,
-                [cedula]
-            );
+            const query = `SELECT * FROM sp_get_user_by_cedula($1::VARCHAR);`;
+            const result = await this.pool.query(query, [cedula]);
             return result.rows[0] || null;
         } catch (err) {
-            console.error('❌ Error al obtener usuario por cédula:', err.message);
+            console.error('❌ Error al obtener usuario por cédula (SP):', err.message);
             throw err;
         }
-    }    
+    }
+    
 
      // ✅ Editar usuario
      async updateUser(userId, { cedula, nombre, apellido, email, password, rol }) {
         try {
-             // 1️⃣ Encriptar la contraseña antes de guardarla
-             const hashedPassword = await bcrypt.hash(password, 10);
-
+            const hashedPassword = await bcrypt.hash(password, 10);
             const query = `
-                UPDATE usuarios 
-                SET cedula = $1, nombre = $2, apellido = $3, email = $4, password = $5, rol = $6
-                WHERE id = $7 RETURNING *;
-            `;
-            const values = [cedula, nombre, apellido, email, hashedPassword, rol, userId];
+                SELECT * FROM sp_update_user(
+                    $1::INT, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR, $7::VARCHAR
+                );`;
+            const values = [userId, cedula, nombre, apellido, email, hashedPassword, rol];
             const result = await this.pool.query(query, values);
-
             return result.rows[0] || null;
         } catch (err) {
-            console.error('❌ Error al actualizar usuario en PostgreSQL:', err.message);
+            console.error('❌ Error al actualizar usuario (SP):', err.message);
             throw err;
         }
     }
+    
 
     // ✅ Eliminar usuario
     async deleteUser(userId) {
         try {
-            const result = await this.pool.query(`DELETE FROM usuarios WHERE id = $1 RETURNING *;`, [userId]);
+            const result = await this.pool.query(`SELECT * FROM sp_delete_user($1);`, [userId]);
             return result.rows[0] || null;
         } catch (err) {
             console.error('❌ Error al eliminar usuario en PostgreSQL:', err.message);
             throw err;
         }
     }
-
+    
     /*
     * CANDIDATOS
     */
 
      // ✅ Método para crear un candidato
-     async createCandidato({ cedula, nombre, apellido, partido, numeroLista }) {
+    async createCandidato({ cedula, nombre, apellido, partido, numeroLista }) {
         try {
-            const query = `
-                INSERT INTO candidatos (cedula, nombre, apellido, partido, numero_lista) 
-                VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
-            
-            const values = [cedula, nombre, apellido, partido, numeroLista];
-            const result = await this.pool.query(query, values);
-
+            const result = await this.pool.query(
+                `SELECT * FROM sp_create_candidato($1, $2, $3, $4, $5);`,
+                [cedula, nombre, apellido, partido, numeroLista]
+            );
             return result.rows[0];
         } catch (err) {
             console.error('❌ Error al registrar candidato en PostgreSQL:', err.message);
@@ -161,12 +151,11 @@ class PostgresDAO {
         }
     }
 
+
     // ✅ Método para listar todos los candidatos
     async getCandidatos() {
         try {
-            const result = await this.pool.query(
-                `SELECT id, cedula, nombre, apellido, partido, numero_lista FROM candidatos`
-            );
+            const result = await this.pool.query(`SELECT * FROM sp_get_candidatos();`);
             return result.rows;
         } catch (err) {
             console.error('❌ Error al obtener candidatos de PostgreSQL:', err.message);
@@ -174,16 +163,14 @@ class PostgresDAO {
         }
     }
 
+
     // ✅ Método para actualizar un candidato
     async updateCandidato(id, { cedula, nombre, apellido, partido, numeroLista }) {
         try {
-            const query = `
-                UPDATE candidatos SET cedula = $1, nombre = $2, apellido = $3, partido = $4, numero_lista = $5
-                WHERE id = $6 RETURNING *;`;
-            
-            const values = [cedula, nombre, apellido, partido, numeroLista, id];
-            const result = await this.pool.query(query, values);
-
+            const result = await this.pool.query(
+                `SELECT * FROM sp_update_candidato($1, $2, $3, $4, $5, $6);`,
+                [id, cedula, nombre, apellido, partido, numeroLista]
+            );
             return result.rows[0];
         } catch (err) {
             console.error('❌ Error al actualizar candidato en PostgreSQL:', err.message);
@@ -191,55 +178,58 @@ class PostgresDAO {
         }
     }
 
+
     // ✅ Método para eliminar un candidato
     async deleteCandidato(id) {
         try {
-            await this.pool.query('DELETE FROM candidatos WHERE id = $1', [id]);
+            await this.pool.query(`SELECT sp_delete_candidato($1);`, [id]);
         } catch (err) {
             console.error('❌ Error al eliminar candidato en PostgreSQL:', err.message);
             throw err;
         }
     }
 
+
+    // ✅ Método para obtener candidatos por IDs usando SP
     async getCandidatesByIds(candidateIds) {
         try {
             if (candidateIds.length === 0) return [];
-            const query = `SELECT id, nombre, partido FROM candidatos WHERE id = ANY($1)`;
-            const result = await this.pool.query(query, [candidateIds]);
+            
+            const result = await this.pool.query(
+                `SELECT * FROM sp_get_candidates_by_ids($1);`,
+                [candidateIds]
+            );
             return result.rows;
         } catch (err) {
             console.error('❌ Error al obtener candidatos por IDs:', err.message);
             throw err;
         }
     }
+
     
     
+    // ✅ Método para registrar un voto usando SP
     async createVote(userId, candidateId) {
         try {
-            await this.pool.query(
-                'INSERT INTO votes (user_id, candidate_id, fecha_voto) VALUES ($1, $2, NOW())',
-                [userId, candidateId]
-            );
+            await this.pool.query(`SELECT sp_create_vote($1, $2);`, [userId, candidateId]);
         } catch (err) {
-            console.error('Error al registrar voto en PostgreSQL:', err.message);
+            console.error('❌ Error al registrar voto en PostgreSQL:', err.message);
             throw err;
         }
     }
 
+
+    // ✅ Método para obtener resultados usando SP
     async getResults() {
         try {
-            const results = await this.pool.query(
-                `SELECT c.nombre, c.partido, c.numero_lista, COUNT(v.id) as votos
-                 FROM votes v
-                 JOIN candidatos c ON v.candidate_id = c.id
-                 GROUP BY c.id`
-            );
+            const results = await this.pool.query(`SELECT * FROM sp_get_results();`);
             return results.rows;
         } catch (err) {
-            console.error('Error al obtener resultados de PostgreSQL:', err.message);
+            console.error('❌ Error al obtener resultados de PostgreSQL:', err.message);
             throw err;
         }
     }
+
     
 }
 

@@ -45,7 +45,11 @@ export class LogsComponent implements OnInit {
     this.voteService.getVoteLogs().subscribe({
       next: (data) => {
         console.log("this.datalogs",data)
-        this.dataSource.data = data; // ✅ Ajusta si la respuesta del backend tiene otro formato
+
+        // Ordenar los logs por timestamp (más recientes primero)
+        this.dataSource.data = data.sort((a: any, b: any) => 
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
         this.isLoading = false;
       },
       error: (error) => {
