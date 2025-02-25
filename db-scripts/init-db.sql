@@ -231,9 +231,11 @@ RETURNS TABLE (
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT id, cedula, nombre, apellido, partido, numero_lista FROM candidatos;
+    SELECT c.id, c.cedula, c.nombre, c.apellido, c.partido, c.numero_lista 
+    FROM candidatos c;
 END;
 $$ LANGUAGE plpgsql;
+
 
 -- updateCandidato
 CREATE OR REPLACE FUNCTION public.sp_update_candidato(

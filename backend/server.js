@@ -142,7 +142,7 @@ const emitResults = async () => {
     }
 };
 
-// Configura throttle para controlar la frecuencia de envío (por ejemplo, 5 segundos)
+// Configura throttle para controlar la frecuencia de envío (por ejemplo, 10 segundos)
 const throttledEmitResults = _.throttle(emitResults, 10000, { trailing: true });
 
 
