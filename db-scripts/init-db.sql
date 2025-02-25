@@ -187,10 +187,11 @@ AS $$
 BEGIN
     RETURN QUERY
     DELETE FROM usuarios
-    WHERE id = p_user_id
+    WHERE usuarios.id = p_user_id
     RETURNING usuarios.id, usuarios.cedula, usuarios.nombre, usuarios.apellido, usuarios.email, usuarios.rol;
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 -- createCandidato
@@ -257,16 +258,17 @@ RETURNS TABLE (
 AS $$
 BEGIN
     RETURN QUERY
-    UPDATE candidatos SET
+    UPDATE public.candidatos AS c SET
         cedula = p_cedula,
         nombre = p_nombre,
         apellido = p_apellido,
         partido = p_partido,
         numero_lista = p_numero_lista
-    WHERE id = p_id
-    RETURNING id, cedula, nombre, apellido, partido, numero_lista;
+    WHERE c.id = p_id
+    RETURNING c.id, c.cedula, c.nombre, c.apellido, c.partido, c.numero_lista;
 END;
 $$ LANGUAGE plpgsql;
+
 
 -- deleteCandidato
 CREATE OR REPLACE FUNCTION public.sp_delete_candidato(p_id INT)
@@ -286,11 +288,12 @@ RETURNS TABLE (
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT id, nombre, partido
-    FROM candidatos
-    WHERE id = ANY(p_candidate_ids);
+    SELECT c.id, c.nombre, c.partido
+    FROM candidatos c
+    WHERE c.id = ANY(p_candidate_ids);
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 -- createVote

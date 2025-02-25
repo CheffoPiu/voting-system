@@ -26,7 +26,7 @@ export class VoteComponent implements OnInit {
   userId: any
   candidatos: any[] = []; // Se llenará con datos del backend
   autoVotingInterval: any = null; // Guardará el intervalo de votación automática
-  votingSpeed: number = 1000; // Tiempo entre votos (en milisegundos)
+  votingSpeed: number = 2000; // Tiempo entre votos (en milisegundos)
 
   constructor(private voteService: VoteService,
     private candidatoService: CandidatoService
@@ -84,7 +84,7 @@ export class VoteComponent implements OnInit {
     console.log("🎲 Enviando voto:", vote);
 
     this.voteService.submitVote(vote).subscribe({
-      next: () =>alert('✅ Voto registrado con éxito.'),
+      next: () => console.log('✅ Voto registrado con éxito.'),
       error: (err) => {
         console.error('❌ Error al registrar el voto:', err);
       },
