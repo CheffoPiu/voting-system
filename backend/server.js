@@ -160,13 +160,13 @@ app.post('/vote', async (req, res) => {
         await voteService.registerVote(userId, candidateId, req);
 
         // Obtener resultados actualizados
-        //const results = await voteService.getResults();
+        const results = await voteService.getResults();
 
         // Emitir actualización a todos los clientes conectados
-        //io.emit('updateResults', results);
+        io.emit('updateResults', results);
 
         // Llama a la función throttled (no se ejecutará más de una vez cada 5 segundos)
-        throttledEmitResults();
+        //throttledEmitResults();
 
         res.status(201).json({ message: '✅ Voto registrado exitosamente en PostgreSQL y MongoDB' });
     } catch (err) {
